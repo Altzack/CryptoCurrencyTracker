@@ -1,4 +1,4 @@
 export default {
-  API_KEY: '9f9823d729f240218f2932a000ee755a',
-  API_ENDPOINT: 'https://api.covidactnow.org/v2',
+  API_KEY: '789af179-6a9f-48db-85e5-c243353fa492',
+  API_ENDPOINT: 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/',
 };

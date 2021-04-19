@@ -6,6 +6,7 @@ import { MenuOutlined } from '@ant-design/icons';
 import { DesktopOnly, MobileOnly } from './responsiveComponents';
 import 'antd/dist/antd.css';
 import '../../App.css';
+import { SiBitcoin } from 'react-icons/si';
 
 const AppHeaderContainer = styled.div`
   padding: 8px 12px;
@@ -83,17 +84,19 @@ export default function Header() {
       <DesktopOnly>
         <HeaderContentContainer>
           <HeaderSection style={{ justifyContent: 'flex-start' }}>
-            <Link style={{ textDecoration: 'none', color: '#000' }} to="/">
-              <StyledHeader></StyledHeader>
-            </Link>
-            <FooterSeparator></FooterSeparator>
+            <LogoLink to="/">
+              <StyledTitle>
+                <SiBitcoin />
+              </StyledTitle>
+            </LogoLink>
+            <FooterSeparator />
           </HeaderSection>
           <HeaderSection style={{ justifyContent: 'center' }}>
             <LogoLink to="/">
-              <StyledTitle>title</StyledTitle>
+              <StyledTitle />
             </LogoLink>
           </HeaderSection>
-          <HeaderSection style={{ justifyContent: 'flex-end' }}></HeaderSection>
+          <HeaderSection style={{ justifyContent: 'flex-end' }} />
         </HeaderContentContainer>
       </DesktopOnly>
       <MobileOnly>
@@ -113,12 +116,12 @@ export default function Header() {
           </HeaderSection>
           <HeaderSection style={{ justifyContent: 'center' }}>
             <LogoLink to="/">
-              <StyledTitle>Untitled</StyledTitle>
+              <StyledTitle>
+                <SiBitcoin />
+              </StyledTitle>
             </LogoLink>
           </HeaderSection>
-          <HeaderSection style={{ justifyContent: 'flex-end' }}>
-            hi
-          </HeaderSection>
+          <HeaderSection style={{ justifyContent: 'flex-end' }} />
         </HeaderContentContainer>
         <Drawer
           placement="left"

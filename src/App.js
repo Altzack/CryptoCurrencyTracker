@@ -8,6 +8,7 @@ import {
   withRouter,
 } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
+import { message } from 'antd';
 import FourOhFour from './containers/common/FourOhFour';
 import { useResponsive } from './containers/common/responsiveComponents';
 import Footer from './containers/common/Footer';
@@ -15,7 +16,6 @@ import Header from './containers/common/Header';
 import AppContext from './AppContext';
 import LandingPage from './containers/LandingPage/LandingPage';
 import config from './config';
-import { message } from 'antd';
 
 const AppContainer = styled.div`
   display: flex;
@@ -48,41 +48,47 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      covidData: [],
+      cryptoData: [],
     };
   }
 
-  setCovidData = (data) => {
+  setCryptoData = (data) => {
     this.setState({
-      covidData: data,
+      cryptoData: data,
     });
   };
 
-  getCovidData = () => {
-    fetch(`${config.API_ENDPOINT}/states.json?apiKey=${config.API_KEY}`, {
-      method: 'GET',
-      headers: {},
-    })
+  getCryptoData = () => {
+    fetch(
+      `${config.API_ENDPOINT}listings/latest?CMC_PRO_API_KEY=${config.API_KEY}`,
+      {
+        method: 'GET',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    )
       .then((res) => {
         if (!res.ok) {
           throw new Error(res.status);
         }
         return res.json();
       })
-      .then(this.setCovidData)
+      .then(this.setCryptoData)
       .catch((err) => {
         message.error(`Please try again later: ${err}`);
       });
   };
 
   componentDidMount = () => {
-    this.getCovidData();
+    this.getCryptoData();
   };
 
   render() {
     const contextValues = {
-      covidData: this.state.covidData || [],
+      cryptoData: this.state.cryptoData.data || [],
     };
+    console.log(this.state.cryptoData.data);
 
     return (
       <AppContext.Provider value={contextValues}>
