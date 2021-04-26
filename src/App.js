@@ -11,7 +11,7 @@ import {
 import { QueryParamProvider } from 'use-query-params';
 import { message } from 'antd';
 import FourOhFour from './containers/common/FourOhFour';
-import { useResponsive } from './containers/common/responsiveComponents';
+import { useIsSmallScreen } from './containers/common/responsiveComponents';
 import Footer from './containers/common/Footer';
 import Header from './containers/common/Header';
 import AppContext from './AppContext';
@@ -35,7 +35,7 @@ const ContentContainer = styled.div`
 `;
 
 const AppWrapper = withRouter(({ children }) => {
-  const { isTabletOrMobile } = useResponsive();
+  const { isTabletOrMobile } = useIsSmallScreen();
   return (
     <AppContainer isMobile={isTabletOrMobile}>
       <Header />

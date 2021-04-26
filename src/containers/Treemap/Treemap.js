@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
 import { Treemap } from '@ant-design/charts';
 import AppContext from '../../AppContext';
+import { useIsSmallScreen } from '../common/responsiveComponents';
 
 const CryptoTreemap = () => {
   const context = React.useContext(AppContext);
+  const isSmallScreen = useIsSmallScreen();
   const filteredData = context.cryptoData.filter(
     (e) =>
       e.name !== 'Bitcoin BEP2' &&
@@ -13,7 +15,7 @@ const CryptoTreemap = () => {
 
   const dataSet = filteredData.map((e) => ({
     name: e.name,
-    value: e.quote.USD.percent_change_7d,
+    value: Number(e.quote.USD.volume_24h),
   }));
 
   const data = {
@@ -24,7 +26,7 @@ const CryptoTreemap = () => {
     data,
     colorField: 'name',
     padding: 'auto',
-    width: 300,
+    width: isSmallScreen ? 370 : 650,
   };
   return <Treemap {...config} />;
 };

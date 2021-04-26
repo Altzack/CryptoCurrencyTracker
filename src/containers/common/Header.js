@@ -46,13 +46,13 @@ const HeaderContentContainer = styled.div`
   height: 44px;
 `;
 
-// const StyledHeader = styled.h3`
-//   color: #fff;
-//   margin-bottom: 0;
-//   :hover {
-//     color: #1890ff;
-//   }
-// `;
+const StyledHeader = styled.h3`
+  color: #fff;
+  margin-bottom: 0;
+  :hover {
+    color: #1890ff;
+  }
+`;
 
 const StyledTitle = styled.h1`
   color: #fff;
