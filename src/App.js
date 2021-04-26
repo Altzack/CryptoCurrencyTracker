@@ -1,6 +1,7 @@
 import './App.css';
 import styled from 'styled-components/macro';
 import React, { Component } from 'react';
+import update from 'react-addons-update';
 import {
   BrowserRouter as Router,
   Switch,
@@ -49,12 +50,20 @@ class App extends Component {
     super(props);
     this.state = {
       cryptoData: [],
+      loading: true,
+      graphData: [],
     };
   }
 
   setCryptoData = (data) => {
+    const newObj = data.data.map((e) => ({
+      checked: false,
+      graphData: [e.quote.USD],
+      ...e,
+    }));
+
     this.setState({
-      cryptoData: data,
+      cryptoData: newObj,
     });
   };
 
@@ -80,15 +89,71 @@ class App extends Component {
       });
   };
 
+  checkGraph = (id) => {
+    // 1. Make a shallow copy of the items
+    const items = [...this.state.cryptoData];
+    // 2. Make a shallow copy of the item you want to mutate
+    const item = { ...items[id - 1] };
+    // 3. Replace the property you're intested in
+    item.checked = !item.checked;
+    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+    items[id - 1] = item;
+    // 5. Set the state to our new copy
+    this.setState({ cryptoData: items });
+
+    console.log(this.state.cryptoData);
+  };
+
+  // setGraphData = (data) => {
+  //   // 1. Make a shallow copy of the items
+  //   const items = [...this.state.cryptoData];
+  //   // 2. Make a shallow copy of the item you want to mutate
+  //   const item = { ...items[data.cmc_rank] };
+  //   // 3. Replace the property you're intested in
+  //   item.graphData = data;
+  //   // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+  //   items[data.cmc_rank] = item;
+  //   // 5. Set the state to our new copy
+  //   this.setState({ cryptoData: items });
+
+  //   this.checkGraph(data.cmc_rank);
+  // };
+
   componentDidMount = () => {
     this.getCryptoData();
   };
 
+  // getGraph = (item) => {
+  //   fetch(
+  //     `${config.GRAPH_ENDPOINT}${item.slug}&CMC_PRO_API_KEY=${config.API_KEY}`,
+  //     {
+  //       method: 'GET',
+  //       headers: {
+  //         'Access-Control-Allow-Origin': '*',
+  //       },
+  //     }
+  //   )
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw new Error(res.status);
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(this.setGraphData(item))
+  //     .then(console.log(this.state.cryptoData))
+  //     .catch((err) => {
+  //       message.error(`Please try again later: ${err}`);
+  //     });
+  // };
+
   render() {
     const contextValues = {
-      cryptoData: this.state.cryptoData.data || [],
+      cryptoData: this.state.cryptoData || [],
+      checkGraph: this.checkGraph,
+      loading: this.state.loading,
+      graphData: this.state.graphData,
+      getGraph: this.getGraph,
     };
-    console.log(this.state.cryptoData.data);
 
     return (
       <AppContext.Provider value={contextValues}>
