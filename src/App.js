@@ -1,6 +1,6 @@
 import './App.css';
 import styled from 'styled-components/macro';
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import update from 'react-addons-update';
 import {
   BrowserRouter as Router,
@@ -17,6 +17,7 @@ import Header from './containers/common/Header';
 import AppContext from './AppContext';
 import LandingPage from './containers/LandingPage/LandingPage';
 import config from './config';
+import CoinPage from './containers/CoinPage/CoinPage';
 
 const AppContainer = styled.div`
   display: flex;
@@ -56,14 +57,14 @@ class App extends Component {
   }
 
   setCryptoData = (data) => {
-    const newObj = data.data.map((e) => ({
-      checked: false,
-      graphData: [e.quote.USD],
-      ...e,
-    }));
+    // const newObj = data.data.map((e) => ({
+    //   checked: false,
+    //   graphData: [e.quote.USD],
+    //   ...e,
+    // }));
 
     this.setState({
-      cryptoData: newObj,
+      cryptoData: data.data,
     });
   };
 
@@ -153,6 +154,7 @@ class App extends Component {
       loading: this.state.loading,
       graphData: this.state.graphData,
       getGraph: this.getGraph,
+      getCryptoData: this.getCryptoData,
     };
 
     return (
@@ -165,6 +167,10 @@ class App extends Component {
                   <Route exact path="/">
                     <LandingPage />
                   </Route>
+                  <Route path="/coin/:id">
+                    <CoinPage />
+                  </Route>
+
                   <Route>
                     <FourOhFour />
                   </Route>

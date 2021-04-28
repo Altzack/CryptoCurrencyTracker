@@ -12,6 +12,9 @@ const StyledCard = styled(Card)`
     width: 450px;
   }
 `;
+
+const StyledLink = styled(Button)``;
+
 const List = () => {
   const context = useContext(AppContext);
 
@@ -33,9 +36,9 @@ const List = () => {
                 justifyContent: 'flex-end',
               }}
             >
-              <Button onClick={() => context.checkGraph(data.cmc_rank)}>
-                Chart
-              </Button>
+              <StyledLink type="link" href={`/coin/${data.id}`}>
+                More Info
+              </StyledLink>
             </div>
           </div>
           <div>

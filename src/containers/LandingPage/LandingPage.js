@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Button } from 'antd';
 import List from '../List/List';
-import CryptoTreemap from '../Treemap/Treemap';
+import CryptoColumn from '../Treemap/Treemap';
 
 export default function LandingPage() {
   const [treeMap, setTreeMap] = React.useState(false);
@@ -15,20 +16,20 @@ export default function LandingPage() {
     >
       <h2 style={{ color: '#fff' }}>Listed by CMC ranking</h2>
       {!treeMap ? (
-        <button style={{ color: '#000' }} onClick={() => setTreeMap(true)}>
-          Treemap
-        </button>
+        <Button style={{ color: '#000' }} onClick={() => setTreeMap(true)}>
+          Column
+        </Button>
       ) : (
-        <button style={{ color: '#000' }} onClick={() => setTreeMap(false)}>
+        <Button style={{ color: '#000' }} onClick={() => setTreeMap(false)}>
           Cards
-        </button>
+        </Button>
       )}
 
       {!treeMap ? (
         <List />
       ) : (
         <div style={{ marginTop: 20 }}>
-          <CryptoTreemap />
+          <CryptoColumn />
         </div>
       )}
     </div>
