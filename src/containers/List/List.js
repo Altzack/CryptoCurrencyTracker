@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
-import { Card, Divider, Button } from 'antd';
+import { Card, Divider, Button, List } from 'antd';
 import styled from 'styled-components/macro';
 import AppContext from '../../AppContext';
-import CryptoTreemap from '../Treemap/Treemap';
-import config from '../../config';
+import Loader from '../common/Loader/Loader';
 
 const StyledCard = styled(Card)`
   width: 320px;
@@ -15,11 +14,23 @@ const StyledCard = styled(Card)`
 
 const StyledLink = styled(Button)``;
 
-const List = () => {
+const CryptoList = () => {
   const context = useContext(AppContext);
 
   const list = context.cryptoData.map((data) => {
     return (
+      // <List
+      //   dataSource={data}
+      //   renderItem={(item) => (
+      //     <List.Item
+      //       actions={[
+      //         <a key="list-loadmore-edit">edit</a>,
+      //         <a key="list-loadmore-more">more</a>,
+      //       ]}
+      //     />
+      //   )}
+      // />
+
       <StyledCard>
         <div>
           <div
@@ -36,7 +47,7 @@ const List = () => {
                 justifyContent: 'flex-end',
               }}
             >
-              <StyledLink type="link" href={`/coin/${data.id}`}>
+              <StyledLink type="link" href={`/coin/${data.symbol}`}>
                 More Info
               </StyledLink>
             </div>
@@ -76,4 +87,4 @@ const List = () => {
 
   return <div>{list}</div>;
 };
-export default List;
+export default CryptoList;

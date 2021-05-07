@@ -2,14 +2,18 @@ import './App.css';
 import styled from 'styled-components/macro';
 import React, { Component, useEffect } from 'react';
 import update from 'react-addons-update';
+
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   withRouter,
+  useParams,
 } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
 import { message } from 'antd';
+import moment from 'moment';
+import queryString from 'query-string';
 import FourOhFour from './containers/common/FourOhFour';
 import { useIsSmallScreen } from './containers/common/responsiveComponents';
 import Footer from './containers/common/Footer';
@@ -90,62 +94,62 @@ class App extends Component {
       });
   };
 
-  checkGraph = (id) => {
-    // 1. Make a shallow copy of the items
-    const items = [...this.state.cryptoData];
-    // 2. Make a shallow copy of the item you want to mutate
-    const item = { ...items[id - 1] };
-    // 3. Replace the property you're intested in
-    item.checked = !item.checked;
-    // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-    items[id - 1] = item;
-    // 5. Set the state to our new copy
-    this.setState({ cryptoData: items });
-
-    console.log(this.state.cryptoData);
-  };
-
-  // setGraphData = (data) => {
+  // checkGraph = (id) => {
   //   // 1. Make a shallow copy of the items
   //   const items = [...this.state.cryptoData];
   //   // 2. Make a shallow copy of the item you want to mutate
-  //   const item = { ...items[data.cmc_rank] };
+  //   const item = { ...items[id - 1] };
   //   // 3. Replace the property you're intested in
-  //   item.graphData = data;
+  //   item.checked = !item.checked;
   //   // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-  //   items[data.cmc_rank] = item;
+  //   items[id - 1] = item;
   //   // 5. Set the state to our new copy
   //   this.setState({ cryptoData: items });
 
-  //   this.checkGraph(data.cmc_rank);
+  //   console.log(this.state.cryptoData);
   // };
+
+  setGraphData = (data) => {
+    const timeSeries = data['Time Series (Digital Currency Daily)'];
+    const dateKeys = Object.keys(data['Time Series (Digital Currency Daily)']);
+    const graphArray = [];
+    let graphObj = {};
+    for (let i = 0; i < 50; i++) {
+      graphObj = {
+        price: parseFloat(timeSeries[dateKeys[i]]['4b. close (USD)']),
+        date: moment(dateKeys[i]).format('MM/DD'),
+      };
+      graphArray.push(graphObj);
+    }
+    this.setState({
+      graphData: graphArray.reverse(),
+      loading: false,
+    });
+  };
 
   componentDidMount = () => {
     this.getCryptoData();
   };
 
-  // getGraph = (item) => {
-  //   fetch(
-  //     `${config.GRAPH_ENDPOINT}${item.slug}&CMC_PRO_API_KEY=${config.API_KEY}`,
-  //     {
-  //       method: 'GET',
-  //       headers: {
-  //         'Access-Control-Allow-Origin': '*',
-  //       },
-  //     }
-  //   )
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         throw new Error(res.status);
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(this.setGraphData(item))
-  //     .then(console.log(this.state.cryptoData))
-  //     .catch((err) => {
-  //       message.error(`Please try again later: ${err}`);
-  //     });
-  // };
+  getGraph = (item) => {
+    fetch(
+      `${config.GRAPH_ENDPOINT}symbol=${item}&market=USD&apikey=${config.GRAPH_KEY}`,
+      {
+        method: 'GET',
+        headers: {},
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.status);
+        }
+        return res.json();
+      })
+      .then(this.setGraphData)
+      .catch((err) => {
+        message.error(`Please try again later: ${err}`);
+      });
+  };
 
   render() {
     const contextValues = {
@@ -167,7 +171,7 @@ class App extends Component {
                   <Route exact path="/">
                     <LandingPage />
                   </Route>
-                  <Route path="/coin/:id">
+                  <Route path="/coin/:symbol">
                     <CoinPage />
                   </Route>
 
