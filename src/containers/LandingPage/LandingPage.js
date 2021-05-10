@@ -14,7 +14,7 @@ export default function LandingPage() {
         flexDirection: 'column',
       }}
     >
-      <h2 style={{ color: '#fff' }}>Listed by CMC ranking</h2>
+      {/* <h2 style={{ color: '#fff' }}>Listed by CMC ranking</h2> */}
       {!treeMap ? (
         <Button style={{ color: '#000' }} onClick={() => setTreeMap(true)}>
           Column

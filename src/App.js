@@ -57,6 +57,7 @@ class App extends Component {
       cryptoData: [],
       loading: true,
       graphData: [],
+      metaData: [],
     };
   }
 
@@ -69,6 +70,19 @@ class App extends Component {
 
     this.setState({
       cryptoData: data.data,
+    });
+  };
+
+  setMetaData = (data) => {
+    // const newObj = data.data.map((e) => ({
+    //   checked: false,
+    //   graphData: [e.quote.USD],
+    //   ...e,
+    // }));
+    const arr = Object.values(data.data);
+    this.setState({
+      metaData: arr,
+      loading: false,
     });
   };
 
@@ -89,6 +103,8 @@ class App extends Component {
         return res.json();
       })
       .then(this.setCryptoData)
+      .then(this.getMetaData)
+
       .catch((err) => {
         message.error(`Please try again later: ${err}`);
       });
@@ -151,6 +167,28 @@ class App extends Component {
       });
   };
 
+  getMetaData = () => {
+    const symbolList = this.state.cryptoData.map((item) => item.symbol);
+    fetch(
+      `${config.META_ENDPOINT}symbol=${symbolList}&CMC_PRO_API_KEY=${config.API_KEY}`,
+      {
+        method: 'GET',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.status);
+        }
+        return res.json();
+      })
+      .then(this.setMetaData)
+      .catch((err) => {
+        message.error(`Please try again later: ${err}`);
+      });
+  };
   render() {
     const contextValues = {
       cryptoData: this.state.cryptoData || [],
@@ -158,9 +196,10 @@ class App extends Component {
       loading: this.state.loading,
       graphData: this.state.graphData,
       getGraph: this.getGraph,
+      metaData: this.state.metaData,
       getCryptoData: this.getCryptoData,
     };
-
+    console.log(this.state.metaData);
     return (
       <AppContext.Provider value={contextValues}>
         <>

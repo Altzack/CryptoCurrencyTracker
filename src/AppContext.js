@@ -8,6 +8,7 @@ const AppContext = React.createContext({
   getGraph: () => {},
   treeMap: false,
   getCryptoData: () => {},
+  metaData: [],
 });
 
 export default AppContext;
