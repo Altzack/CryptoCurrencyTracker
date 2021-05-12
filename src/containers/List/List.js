@@ -1,24 +1,15 @@
 import React, { useContext } from 'react';
-import {
-  Card,
-  Divider,
-  Button,
-  List,
-  Typography,
-  Table,
-  Tag,
-  Space,
-} from 'antd';
+import { Card, Divider, Button, Typography, Table, Tag, Space } from 'antd';
 import styled from 'styled-components/macro';
 import AppContext from '../../AppContext';
 import Loader from '../common/Loader/Loader';
+import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
+import './List.css';
+import { useIsSmallScreen } from '../common/responsiveComponents';
 
-const StyledCard = styled(Card)`
-  width: 320px;
-  margin-top: 10px;
-  @media (min-width: 760px) {
-    width: 450px;
-  }
+const StyledTableCon = styled.div`
+  padding: 10px;
+  ${({ mobile }) => mobile && 'width: calc(100% - 25px);'};
 `;
 
 const StyledLink = styled(Button)``;
@@ -26,6 +17,7 @@ const StyledLink = styled(Button)``;
 const CryptoList = () => {
   const context = useContext(AppContext);
   const { Column, ColumnGroup } = Table;
+  const small = useIsSmallScreen();
 
   const priceList = context.cryptoData.map((item) => {
     return {
@@ -38,6 +30,9 @@ const CryptoList = () => {
     };
   });
   console.log(priceList);
+  const upArr = <CaretUpOutlined />;
+  const downArr = <CaretDownOutlined />;
+
   // const list = context.cryptoData.map((data) => {
   //   return (
   //     // <List
@@ -125,31 +120,66 @@ const CryptoList = () => {
         //     </List.Item>
         //   )}
         // />
-        <Table dataSource={priceList} title={() => 'Listed by CMC ranking'}>
-          <Column
-            dataIndex=""
-            key="logo"
-            render={(item) => (
-              <img style={{ width: 24, heigh: 24 }} src={item.logo.logo} />
-            )}
-          />
+        <StyledTableCon mobile={small} className="tableWrap">
+          <Table
+            pagination={{ position: ['bottomCenter'] }}
+            dataSource={priceList}
+            title={() => 'Listed by CMC ranking'}
+            scroll={small ? { x: 600 } : {}}
+          >
+            {/* <Column
+              dataIndex=""
+              key="logo"
+              render={(item) => (
+                <img style={{ width: 24, heigh: 24 }} src={item.logo.logo} />
+              )}
+            /> */}
 
-          <Column title="Name" dataIndex="symbol" key="name" />
-          <Column
-            title="Price"
-            dataIndex="price"
-            key="price"
-            render={(text) => '$' + text}
-          />
-          <Column title="24h %" dataIndex="percent" key="percent" />
-          <Column
-            title="Market Cap"
-            dataIndex="marketc"
-            key="marketC"
-            render={(text) => '$' + text}
-          />
+            <Column
+              title="Name"
+              fixed="left"
+              dataIndex=""
+              key="name"
+              render={(item) => (
+                <div
+                  style={{ display: small ? 'flex' : '', alignItems: 'center' }}
+                >
+                  <img style={{ width: 24, height: 24 }} src={item.logo.logo} />
+                  &nbsp; &nbsp;
+                  <span>{item.symbol}</span>
+                </div>
+              )}
+            />
+            <Column
+              title="Price"
+              dataIndex="price"
+              key="price"
+              render={(text) => '$' + text}
+            />
+            <Column
+              title="24h %"
+              dataIndex="percent"
+              key="percent"
+              render={(text) =>
+                text.includes('-') ? (
+                  <span style={{ color: '#eb4650' }}>
+                    {'\u25BE' + text.split('-').pop().trim() + '%'}
+                  </span>
+                ) : (
+                  <span style={{ color: '#46ebac' }}>
+                    {'\u25B4' + text + '%'}
+                  </span>
+                )
+              }
+            />
+            <Column
+              title="Market Cap"
+              dataIndex="marketc"
+              key="marketC"
+              render={(text) => '$' + text}
+            />
 
-          {/* <Column
+            {/* <Column
             title="Tags"
             dataIndex="tags"
             key="tags"
@@ -163,16 +193,17 @@ const CryptoList = () => {
               </>
             )}
           /> */}
-          <Column
-            title="Action"
-            key="action"
-            render={(item) => (
-              <Space size="middle">
-                <a href={`/coin/${item.symba}`}>more</a>
-              </Space>
-            )}
-          />
-        </Table>
+            <Column
+              title="Action"
+              key="action"
+              render={(item) => (
+                <Space size="middle">
+                  <a href={`/coin/${item.symba}`}>more</a>
+                </Space>
+              )}
+            />
+          </Table>
+        </StyledTableCon>
       )}
     </>
   );

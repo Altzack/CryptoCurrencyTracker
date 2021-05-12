@@ -15,7 +15,7 @@ export default function LandingPage() {
       }}
     >
       {/* <h2 style={{ color: '#fff' }}>Listed by CMC ranking</h2> */}
-      {!treeMap ? (
+      {/* {!treeMap ? (
         <Button style={{ color: '#000' }} onClick={() => setTreeMap(true)}>
           Column
         </Button>
@@ -23,7 +23,7 @@ export default function LandingPage() {
         <Button style={{ color: '#000' }} onClick={() => setTreeMap(false)}>
           Cards
         </Button>
-      )}
+      )} */}
 
       {!treeMap ? (
         <CryptoList />

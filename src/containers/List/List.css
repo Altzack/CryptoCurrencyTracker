@@ -1,0 +1,24 @@
+.ant-table {
+  background: #181a1b;
+  color: #e8e6e3;
+}
+
+.ant-table:hover {
+  background: #181a1b !important;
+  color: #e8e6e3 !important;
+}
+
+thead[class*='ant-table-thead'] th {
+  background-color: #181a1b !important;
+  color: #e8e6e3;
+  border-color: #34383a;
+}
+
+tbody[class*='ant-table-tbody'] td {
+  border-color: #34383a;
+}
+
+tbody[class*='ant-table-tbody'] td {
+  background: #181a1b !important;
+  color: #e8e6e3 !important;
+}
