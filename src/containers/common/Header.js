@@ -6,7 +6,6 @@ import { MenuOutlined } from '@ant-design/icons';
 import { DesktopOnly, MobileOnly } from './responsiveComponents';
 import 'antd/dist/antd.css';
 import '../../App.css';
-import { SiBitcoin } from 'react-icons/si';
 
 const AppHeaderContainer = styled.div`
   padding: 8px 12px;
@@ -46,13 +45,13 @@ const HeaderContentContainer = styled.div`
   height: 44px;
 `;
 
-const StyledHeader = styled.h3`
-  color: #fff;
-  margin-bottom: 0;
-  :hover {
-    color: #1890ff;
-  }
-`;
+// const StyledHeader = styled.h3`
+//   color: #fff;
+//   margin-bottom: 0;
+//   :hover {
+//     color: #1890ff;
+//   }
+// `;
 
 const StyledTitle = styled.h1`
   color: #fff;

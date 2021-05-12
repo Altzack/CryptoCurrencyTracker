@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { Button } from 'antd';
+import React from 'react';
 import CryptoList from '../List/List';
-import CryptoColumn from '../Treemap/Treemap';
 
 export default function LandingPage() {
-  const [treeMap, setTreeMap] = useState(false);
+  // const [treeMap, setTreeMap] = useState(false);
   return (
     <div
       style={{
@@ -25,13 +23,14 @@ export default function LandingPage() {
         </Button>
       )} */}
 
-      {!treeMap ? (
+      {/* {!treeMap ? (
         <CryptoList />
       ) : (
         <div style={{ marginTop: 20 }}>
           <CryptoColumn />
         </div>
-      )}
+      )} */}
+      <CryptoList />
     </div>
   );
 }

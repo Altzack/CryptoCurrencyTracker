@@ -1,19 +1,16 @@
 import './App.css';
 import styled from 'styled-components/macro';
-import React, { Component, useEffect } from 'react';
-import update from 'react-addons-update';
+import React, { Component } from 'react';
 
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   withRouter,
-  useParams,
 } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
 import { message } from 'antd';
 import moment from 'moment';
-import queryString from 'query-string';
 import FourOhFour from './containers/common/FourOhFour';
 import { useIsSmallScreen } from './containers/common/responsiveComponents';
 import Footer from './containers/common/Footer';

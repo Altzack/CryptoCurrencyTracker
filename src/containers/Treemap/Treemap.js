@@ -1,11 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Column } from '@ant-design/charts';
 import AppContext from '../../AppContext';
-import { useIsSmallScreen } from '../common/responsiveComponents';
 
 const CryptoColumn = () => {
   const context = React.useContext(AppContext);
-  const isSmallScreen = useIsSmallScreen();
   const filteredData = context.cryptoData.filter(
     (e) =>
       e.name !== 'Bitcoin BEP2' &&

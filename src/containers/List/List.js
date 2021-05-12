@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { Card, Divider, Button, Typography, Table, Tag, Space } from 'antd';
+import { Table, Space } from 'antd';
 import styled from 'styled-components/macro';
 import AppContext from '../../AppContext';
 import Loader from '../common/Loader/Loader';
-import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
+// import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import './List.css';
 import { useIsSmallScreen } from '../common/responsiveComponents';
 
@@ -12,11 +12,9 @@ const StyledTableCon = styled.div`
   ${({ mobile }) => mobile && 'width: calc(100% - 25px);'};
 `;
 
-const StyledLink = styled(Button)``;
-
 const CryptoList = () => {
   const context = useContext(AppContext);
-  const { Column, ColumnGroup } = Table;
+  const { Column } = Table;
   const small = useIsSmallScreen();
 
   const priceList = context.cryptoData.map((item) => {
@@ -30,8 +28,6 @@ const CryptoList = () => {
     };
   });
   console.log(priceList);
-  const upArr = <CaretUpOutlined />;
-  const downArr = <CaretDownOutlined />;
 
   // const list = context.cryptoData.map((data) => {
   //   return (
@@ -144,7 +140,11 @@ const CryptoList = () => {
                 <div
                   style={{ display: small ? 'flex' : '', alignItems: 'center' }}
                 >
-                  <img style={{ width: 24, height: 24 }} src={item.logo.logo} />
+                  <img
+                    alt="logo"
+                    style={{ width: 24, height: 24 }}
+                    src={item.logo.logo}
+                  />
                   &nbsp; &nbsp;
                   <span>{item.symbol}</span>
                 </div>

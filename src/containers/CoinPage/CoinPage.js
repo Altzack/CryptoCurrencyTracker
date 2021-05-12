@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { Button, Typography } from 'antd';
 import styled from 'styled-components/macro';
 import { Line } from '@ant-design/charts';
 import AppContext from '../../AppContext';
-import CryptoTreemap from '../Treemap/Treemap';
 import Loader from '../common/Loader/Loader';
 
 const StyledDiv = styled.div`
@@ -21,7 +20,7 @@ const TitleItem = styled.div`
 `;
 
 const CoinPage = () => {
-  const { Title, Paragraph, Text, Link } = Typography;
+  // const { Title, Paragraph, Text, Link } = Typography;
 
   const context = useContext(AppContext);
   const id = useParams();
