@@ -19,7 +19,7 @@ body {
 }
 
 html {
-  background-color: rgba(250, 250, 250);
+  background-color: #181a1b;
   max-width: 100%;
   overflow-x: hidden; /* Hide horizontal scrollbar */
 }

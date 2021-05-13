@@ -16,6 +16,8 @@ thead[class*='ant-table-thead'] th {
 
 tbody[class*='ant-table-tbody'] td {
   border-color: #34383a;
+  padding: 10px 4px;
+  text-align: left;
 }
 
 tbody[class*='ant-table-tbody'] td {

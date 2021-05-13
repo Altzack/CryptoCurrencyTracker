@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Table, Space } from 'antd';
+import { Table, Space, Tag } from 'antd';
 import styled from 'styled-components/macro';
 import AppContext from '../../AppContext';
 import Loader from '../common/Loader/Loader';
@@ -7,9 +7,24 @@ import Loader from '../common/Loader/Loader';
 import './List.css';
 import { useIsSmallScreen } from '../common/responsiveComponents';
 
+const abbreviate = require('number-abbreviate');
+
 const StyledTableCon = styled.div`
-  padding: 10px;
-  ${({ mobile }) => mobile && 'width: calc(100% - 25px);'};
+  padding: 12px;
+  width: 100%;
+  ${({ mobile }) => mobile && 'width: 100%'};
+`;
+const StyledTag = styled(Tag)`
+  border-radius: 4px;
+  padding: 0px 6px;
+  display: inline-block;
+  margin-right: 0px;
+  font-size: 12px;
+  margin-left: 12px;
+  border: none;
+  background-image: initial;
+  background-color: rgb(31, 34, 35);
+  color: rgb(164, 157, 145);
 `;
 
 const CryptoList = () => {
@@ -19,9 +34,12 @@ const CryptoList = () => {
 
   const priceList = context.cryptoData.map((item) => {
     return {
+      rank: item.cmc_rank,
+      percent7d: Number(item.quote.USD.percent_change_7d).toLocaleString(),
       price: Number(item.quote.USD.price).toLocaleString(),
-      symbol: item.name + ' • ' + item.symbol,
-      marketc: Number(item.quote.USD.market_cap).toLocaleString(),
+      volume: Number(item.quote.USD.volume_24h).toLocaleString(),
+      name: item.name,
+      marketc: Number(item.quote.USD.market_cap),
       percent: Number(item.quote.USD.percent_change_24h).toLocaleString(),
       symba: item.symbol,
       logo: context.metaData.find((i) => i.symbol === item.symbol),
@@ -118,10 +136,10 @@ const CryptoList = () => {
         // />
         <StyledTableCon mobile={small} className="tableWrap">
           <Table
-            pagination={{ position: ['bottomCenter'] }}
+            pagination={{ position: ['bottomCenter'], defaultPageSize: 100 }}
             dataSource={priceList}
             title={() => 'Listed by CMC ranking'}
-            scroll={small ? { x: 600 } : {}}
+            scroll={small ? { x: 700 } : {}}
           >
             {/* <Column
               dataIndex=""
@@ -131,53 +149,179 @@ const CryptoList = () => {
               )}
             /> */}
 
+            {!small ? (
+              <Column
+                title="#"
+                dataIndex="rank"
+                key="rank"
+                render={(item) => <StyledTag>{item}</StyledTag>}
+              />
+            ) : (
+              ''
+            )}
+
             <Column
               title="Name"
-              fixed="left"
+              fixed={small ? 'left' : ''}
               dataIndex=""
               key="name"
               render={(item) => (
-                <div
-                  style={{ display: small ? 'flex' : '', alignItems: 'center' }}
-                >
-                  <img
-                    alt="logo"
-                    style={{ width: 24, height: 24 }}
-                    src={item.logo.logo}
-                  />
-                  &nbsp; &nbsp;
-                  <span>{item.symbol}</span>
-                </div>
+                <>
+                  {small ? (
+                    <a href={`/coin/${item.symba}`}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <img
+                          alt="logo"
+                          style={{ width: 24, height: 24 }}
+                          src={item.logo.logo}
+                        />
+
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            flexDirection: 'column',
+                          }}
+                        >
+                          <p
+                            style={{
+                              marginLeft: 12,
+                              marginBottom: 0,
+                              marginTop: 0,
+                              marginRight: 0,
+
+                              fontSize: 14,
+                            }}
+                          >
+                            {item.name}
+                          </p>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <StyledTag>{item.rank}</StyledTag>
+                            <p
+                              style={{
+                                marginLeft: 6,
+                                marginBottom: 0,
+                                marginTop: 0,
+                                marginRight: 0,
+                                color: '#a1998d',
+                                fontSize: 12,
+                              }}
+                            >
+                              {item.symba}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  ) : (
+                    <a href={`/coin/${item.symba}`}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <img
+                          alt="logo"
+                          style={{ width: 24, height: 24 }}
+                          src={item.logo.logo}
+                        />
+                        <p
+                          style={{
+                            marginLeft: 12,
+                            marginBottom: 0,
+                            marginTop: 0,
+                            marginRight: 0,
+
+                            fontSize: 14,
+                          }}
+                        >
+                          {item.name}
+                        </p>
+                        <p
+                          style={{
+                            marginLeft: 6,
+                            marginBottom: 0,
+                            marginTop: 0,
+                            marginRight: 0,
+                            color: '#a1998d',
+                            fontSize: 14,
+                          }}
+                        >
+                          {item.symba}
+                        </p>
+                      </div>
+                    </a>
+                  )}
+                </>
               )}
             />
             <Column
               title="Price"
               dataIndex="price"
+              // width={small ? '128px' : ''}
+              align={small ? 'right' : ''}
               key="price"
-              render={(text) => '$' + text}
+              render={(text) => `$${text}`}
             />
             <Column
               title="24h %"
               dataIndex="percent"
+              // align={small ? 'left' : ''}
+              align={small ? 'right' : ''}
               key="percent"
               render={(text) =>
                 text.includes('-') ? (
                   <span style={{ color: '#eb4650' }}>
-                    {'\u25BE' + text.split('-').pop().trim() + '%'}
+                    {`\u25BE${text.split('-').pop().trim()}%`}
                   </span>
                 ) : (
-                  <span style={{ color: '#46ebac' }}>
-                    {'\u25B4' + text + '%'}
+                  <span style={{ color: '#46ebac' }}>{`\u25B4${text}%`}</span>
+                )
+              }
+            />
+            <Column
+              title="7d %"
+              align={small ? 'right' : ''}
+              dataIndex="percent7d"
+              // align={small ? 'left' : ''}
+              key="percent7d"
+              render={(text) =>
+                text.includes('-') ? (
+                  <span style={{ color: '#eb4650' }}>
+                    {`\u25BE${text.split('-').pop().trim()}%`}
                   </span>
+                ) : (
+                  <span style={{ color: '#46ebac' }}>{`\u25B4${text}%`}</span>
                 )
               }
             />
             <Column
               title="Market Cap"
+              align={small ? 'right' : ''}
               dataIndex="marketc"
+              width="175px"
               key="marketC"
-              render={(text) => '$' + text}
+              render={(text) => `$${abbreviate(text, 2).toUpperCase()}`}
             />
+            {/* <Column
+              title="Volume(24h)"
+              dataIndex="volume"
+              key="volume"
+              render={(text) => '$' + text}
+            /> */}
 
             {/* <Column
             title="Tags"
@@ -193,15 +337,16 @@ const CryptoList = () => {
               </>
             )}
           /> */}
-            <Column
+            {/* <Column
               title="Action"
+              align={small ? 'right' : 'right'}
               key="action"
               render={(item) => (
                 <Space size="middle">
                   <a href={`/coin/${item.symba}`}>more</a>
                 </Space>
               )}
-            />
+            /> */}
           </Table>
         </StyledTableCon>
       )}
