@@ -34,7 +34,7 @@ export default function Footer() {
         <div>
           Crypto
           <FooterSeparator>|</FooterSeparator>
-          Created by <i>Zack 2020</i>
+          Created by <i>Zack 2021</i>
         </div>
         <MobileOnly>
           <br />

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Table, Space, Tag } from 'antd';
+import { Table, Tag } from 'antd';
 import styled from 'styled-components/macro';
 import AppContext from '../../AppContext';
 import Loader from '../common/Loader/Loader';

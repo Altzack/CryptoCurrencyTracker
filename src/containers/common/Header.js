@@ -84,7 +84,7 @@ export default function Header() {
         <HeaderContentContainer>
           <HeaderSection style={{ justifyContent: 'flex-start' }}>
             <LogoLink to="/">
-              <StyledTitle>CryptoCrap</StyledTitle>
+              <StyledTitle>CryptoTrack</StyledTitle>
             </LogoLink>
             <FooterSeparator />
           </HeaderSection>
@@ -113,7 +113,7 @@ export default function Header() {
           </HeaderSection>
           <HeaderSection style={{ justifyContent: 'center' }}>
             <LogoLink to="/">
-              <StyledTitle>CryptoCrap</StyledTitle>
+              <StyledTitle>CryptoTrack</StyledTitle>
             </LogoLink>
           </HeaderSection>
           <HeaderSection style={{ justifyContent: 'flex-end' }} />

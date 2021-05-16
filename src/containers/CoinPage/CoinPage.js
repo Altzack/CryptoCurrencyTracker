@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Button, Typography } from 'antd';
+import { Button, Typography, List, Divider } from 'antd';
 import styled from 'styled-components/macro';
 import { Line } from '@ant-design/charts';
 import AppContext from '../../AppContext';
@@ -9,14 +9,28 @@ import Loader from '../common/Loader/Loader';
 
 const StyledDiv = styled.div`
   display: inline-flex;
-  justify-content: space-around;
+  justify-content: center;
   width: 100%;
 `;
 
 const TitleItem = styled.div`
   color: #fff;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 22px;
+`;
+
+const ListTitleItem = styled.div`
+  color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 1px 13px;
+`;
+
+const ListSubTitleItem = styled.div`
+  color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 1px 13px;
 `;
 
 const CoinPage = () => {
@@ -64,14 +78,159 @@ const CoinPage = () => {
             </Button>
             <div>
               <StyledDiv>
-                <TitleItem>{coinInfo.name}</TitleItem>
-                <TitleItem>
+                <TitleItem>{coinInfo.name} chart</TitleItem>
+                {/* <TitleItem>
                   ${Number(coinInfo.quote.USD.price).toLocaleString()}
-                </TitleItem>
+                </TitleItem> */}
               </StyledDiv>
             </div>
-            <div>
+            <div style={{ padding: 20 }}>
               <Line {...config} />
+            </div>
+            <div style={{ padding: 24 }}>
+              <TitleItem style={{ marginTop: 25 }}>
+                {coinInfo.name} Price Statistics
+              </TitleItem>
+              <ListSubTitleItem style={{ marginTop: 25 }}>
+                {coinInfo.name} Price Today
+              </ListSubTitleItem>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid #867d6e',
+                  borderTop: '1px solid #867d6e',
+                }}
+              >
+                <ListTitleItem>{coinInfo.name} Price</ListTitleItem>
+                <ListSubTitleItem>
+                  ${Number(coinInfo.quote.USD.price).toLocaleString()}
+                </ListSubTitleItem>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid #867d6e',
+                }}
+              >
+                <ListTitleItem>Trading Volume(24h)</ListTitleItem>
+                <ListSubTitleItem>
+                  ${Number(coinInfo.quote.USD.volume_24h).toLocaleString()}
+                </ListSubTitleItem>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid #867d6e',
+                }}
+              >
+                <ListTitleItem>Price Change(24h)</ListTitleItem>
+                <ListSubTitleItem>
+                  {Number(coinInfo.quote.USD.percent_change_24h)
+                    .toLocaleString()
+                    .includes('-') ? (
+                    <span style={{ color: '#eb4650' }}>
+                      {`\u25BE${Number(coinInfo.quote.USD.percent_change_24h)
+                        .toLocaleString()
+                        .split('-')
+                        .pop()
+                        .trim()}%`}
+                    </span>
+                  ) : (
+                    <span style={{ color: '#46ebac' }}>
+                      {`\u25B4${Number(
+                        coinInfo.quote.USD.percent_change_24h
+                      ).toLocaleString()}%`}
+                    </span>
+                  )}
+                </ListSubTitleItem>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid #867d6e',
+                }}
+              >
+                <ListTitleItem>Market Cap</ListTitleItem>
+                <ListSubTitleItem>
+                  ${Number(coinInfo.quote.USD.market_cap).toLocaleString()}
+                </ListSubTitleItem>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid #867d6e',
+                }}
+              >
+                <ListTitleItem>Market Rank</ListTitleItem>
+                <ListSubTitleItem>
+                  #{Number(coinInfo.cmc_rank)}
+                </ListSubTitleItem>
+              </div>
+              <div style={{ marginTop: 25 }}>
+                <ListSubTitleItem>{coinInfo.name} Supply</ListSubTitleItem>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                    borderTop: '1px solid #867d6e',
+                  }}
+                >
+                  <ListTitleItem>Max Supply</ListTitleItem>
+                  <ListSubTitleItem>
+                    {coinInfo.max_supply !== null ? (
+                      `${Number(coinInfo.max_supply).toLocaleString()} ${
+                        coinInfo.symbol
+                      }`
+                    ) : (
+                      <div>No Data</div>
+                    )}
+                  </ListSubTitleItem>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                    borderTop: '1px solid #867d6e',
+                  }}
+                >
+                  <ListTitleItem>Circulating Supply</ListTitleItem>
+                  <ListSubTitleItem>
+                    {coinInfo.circulating_supply !== null ? (
+                      `${Number(
+                        coinInfo.circulating_supply
+                      ).toLocaleString()} ${coinInfo.symbol}`
+                    ) : (
+                      <div>No Data</div>
+                    )}
+                  </ListSubTitleItem>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                    borderTop: '1px solid #867d6e',
+                  }}
+                >
+                  <ListTitleItem>Total Supply</ListTitleItem>
+                  <ListSubTitleItem>
+                    {coinInfo.total_supply !== null ? (
+                      `${Number(coinInfo.total_supply).toLocaleString()} ${
+                        coinInfo.symbol
+                      }`
+                    ) : (
+                      <div>No Data</div>
+                    )}
+                  </ListSubTitleItem>
+                </div>
+              </div>
             </div>
           </Typography>
         </>
