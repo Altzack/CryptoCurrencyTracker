@@ -9,6 +9,8 @@ const AppContext = React.createContext({
   treeMap: false,
   getCryptoData: () => {},
   metaData: [],
+  getMetaData: () => {},
+  config: {},
 });
 
 export default AppContext;

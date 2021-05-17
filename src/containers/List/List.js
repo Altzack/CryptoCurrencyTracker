@@ -37,7 +37,7 @@ const CryptoList = () => {
       rank: item.cmc_rank,
       percent7d: Number(item.quote.USD.percent_change_7d).toLocaleString(),
       price: Number(item.quote.USD.price).toLocaleString(),
-      volume: Number(item.quote.USD.volume_24h).toLocaleString(),
+      volume: Number(item.quote.USD.volume_24h),
       name: item.name,
       marketc: Number(item.quote.USD.market_cap),
       percent: Number(item.quote.USD.percent_change_24h).toLocaleString(),
@@ -47,67 +47,6 @@ const CryptoList = () => {
   });
   console.log(priceList);
 
-  // const list = context.cryptoData.map((data) => {
-  //   return (
-  //     // <List
-  //     //   dataSource={data}
-  //     //   renderItem={(item) => (
-  //     //     <List.Item
-  //     //       actions={[
-  //     //         <a key="list-loadmore-edit">edit</a>,
-  //     //         <a key="list-loadmore-more">more</a>,
-  //     //       ]}
-  //     //     />
-  //     //   )}
-  //     // />
-
-  //     <StyledCard>
-  //       <div>
-  //         <div
-  //           style={{
-  //             fontWeight: 500,
-  //             display: 'flex',
-  //             justifyContent: 'space-between',
-  //           }}
-  //         >
-  //           {data.name} - {data.symbol}
-  //           <div
-  //             style={{
-  //               display: 'inline-flex',
-  //               justifyContent: 'flex-end',
-  //             }}
-  //           >
-  //             <StyledLink type="link" href={`/coin/${data.symbol}`}>
-  //               More Info
-  //             </StyledLink>
-  //           </div>
-  //         </div>
-  //         <div>
-  //           <>
-  //             <Divider />
-  //             <span style={{ fontWeight: 350 }}>Price: </span>
-  //             <span style={{ fontWeight: 300 }}>
-  //               ${Number(data.quote.USD.price).toLocaleString()}
-  //             </span>
-
-  //             <Divider />
-  //             <span style={{ fontWeight: 350 }}>Market Cap: </span>
-  //             <span style={{ fontWeight: 300 }}>
-  //               ${Number(data.quote.USD.market_cap).toLocaleString()}
-  //             </span>
-
-  //             <Divider />
-  //             <span style={{ fontWeight: 350 }}>Percent change: </span>
-  //             <span style={{ fontWeight: 300 }}>
-  //               {Number(data.quote.USD.percent_change_24h).toLocaleString()}%
-  //             </span>
-  //           </>
-  //         </div>
-  //       </div>
-  //     </StyledCard>
-  //   );
-  // });
-
   return (
     <>
       {context.loading ? (
@@ -115,31 +54,12 @@ const CryptoList = () => {
           <Loader />
         </div>
       ) : (
-        // <List
-        //   style={{ color: '#fff' }}
-        //   dataSource={listNames}
-        //   renderItem={(item) => (
-        //     <List.Item
-        //       actions={[
-        //         <a
-        //           href={`/coin/${item.split('•').pop().trim()}`}
-        //           key="list-loadmore-more"
-        //         >
-        //           more
-        //         </a>,
-        //       ]}
-        //     >
-        //       <div style={{ color: '#fff' }}>{item}</div>
-        //       <div>{item.split('•').shift().trim()}</div>
-        //     </List.Item>
-        //   )}
-        // />
         <StyledTableCon mobile={small} className="tableWrap">
           <Table
             pagination={{ position: ['bottomCenter'], defaultPageSize: 100 }}
             dataSource={priceList}
             title={() => 'Listed by CMC ranking'}
-            scroll={small ? { x: 700 } : {}}
+            scroll={small ? { x: 800 } : {}}
           >
             {/* <Column
               dataIndex=""
@@ -163,6 +83,15 @@ const CryptoList = () => {
             <Column
               title="Name"
               fixed={small ? 'left' : ''}
+              sorter={(a, b) => {
+                if (a.name < b.name) {
+                  return -1;
+                }
+                if (a.name > b.name) {
+                  return 1;
+                }
+                return 0;
+              }}
               dataIndex=""
               key="name"
               render={(item) => (
@@ -272,6 +201,7 @@ const CryptoList = () => {
               title="Price"
               dataIndex="price"
               // width={small ? '128px' : ''}
+              sorter={(a, b) => a.price - b.price}
               align={small ? 'right' : ''}
               key="price"
               render={(text) => `$${text}`}
@@ -281,6 +211,7 @@ const CryptoList = () => {
               dataIndex="percent"
               // align={small ? 'left' : ''}
               align={small ? 'right' : ''}
+              sorter={(a, b) => a.percent - b.percent}
               key="percent"
               render={(text) =>
                 text.includes('-') ? (
@@ -295,6 +226,7 @@ const CryptoList = () => {
             <Column
               title="7d %"
               align={small ? 'right' : ''}
+              sorter={(a, b) => a.percent7d - b.percent7d}
               dataIndex="percent7d"
               // align={small ? 'left' : ''}
               key="percent7d"
@@ -312,40 +244,34 @@ const CryptoList = () => {
               title="Market Cap"
               align={small ? 'right' : ''}
               dataIndex="marketc"
-              width="175px"
+              // width="175px"
               key="marketC"
-              render={(text) => `$${abbreviate(text, 2).toUpperCase()}`}
+              width={small ? '130px' : ''}
+              sorter={(a, b) => a.marketc - b.marketc}
+              render={(text) =>
+                small
+                  ? `$${abbreviate(text, 2).toUpperCase()}`
+                  : `$${Number(text).toLocaleString()}`
+              }
+            />
+            <Column
+              title="Volume(24h)"
+              align={small ? 'right' : ''}
+              dataIndex="volume"
+              sorter={(a, b) => a.volume - b.volume}
+              width={small ? '125px' : ''}
+              key="vol"
+              render={(text) =>
+                small
+                  ? `$${abbreviate(text, 2).toUpperCase()}`
+                  : `$${Number(text).toLocaleString()}`
+              }
             />
             {/* <Column
               title="Volume(24h)"
               dataIndex="volume"
               key="volume"
               render={(text) => '$' + text}
-            /> */}
-
-            {/* <Column
-            title="Tags"
-            dataIndex="tags"
-            key="tags"
-            render={(tags) => (
-              <>
-                {tags.map((tag) => (
-                  <Tag color="blue" key={tag}>
-                    {tag}
-                  </Tag>
-                ))}
-              </>
-            )}
-          /> */}
-            {/* <Column
-              title="Action"
-              align={small ? 'right' : 'right'}
-              key="action"
-              render={(item) => (
-                <Space size="middle">
-                  <a href={`/coin/${item.symba}`}>more</a>
-                </Space>
-              )}
             /> */}
           </Table>
         </StyledTableCon>

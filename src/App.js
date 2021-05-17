@@ -167,8 +167,8 @@ class App extends Component {
       });
   };
 
-  getMetaData = () => {
-    const symbolList = this.state.cryptoData.map((item) => item.symbol);
+  getMetaData = (list) => {
+    const symbolList = this.state.cryptoData.map((item) => item.symbol) || list;
     fetch(
       `${config.META_ENDPOINT}symbol=${symbolList}&CMC_PRO_API_KEY=${config.API_KEY}`,
       {
@@ -198,8 +198,9 @@ class App extends Component {
       getGraph: this.getGraph,
       metaData: this.state.metaData,
       getCryptoData: this.getCryptoData,
+      config: config,
+      getMetaData: this.getMetaData,
     };
-    console.log(this.state.metaData);
     return (
       <AppContext.Provider value={contextValues}>
         <>

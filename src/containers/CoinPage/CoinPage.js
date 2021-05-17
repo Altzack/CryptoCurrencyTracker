@@ -1,11 +1,18 @@
-import React, { useContext, useEffect } from 'react';
+/* eslint-disable no-nested-ternary */
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Button, Typography } from 'antd';
+import { Button, Typography, message, Tag } from 'antd';
 import styled from 'styled-components/macro';
 import { Line } from '@ant-design/charts';
 import AppContext from '../../AppContext';
+import { useIsSmallScreen } from '../common/responsiveComponents';
+
+import config from '../../config';
+
 import Loader from '../common/Loader/Loader';
+
+const abbreviate = require('number-abbreviate');
 
 const StyledDiv = styled.div`
   display: inline-flex;
@@ -35,17 +42,74 @@ const ListSubTitleItem = styled.div`
 
 const CoinPage = () => {
   // const { Title, Paragraph, Text, Link } = Typography;
+  const [metaPage, setMetaPage] = useState();
+  const small = useIsSmallScreen();
 
   const context = useContext(AppContext);
   const id = useParams();
   const { getCryptoData } = context;
   const { getGraph } = context;
+  // const { getMetaData } = context;
   const bigID = id.symbol;
+  // const arg = context.cryptoData.map((item) => item.symbol);
+
+  const getMetaPage = () => {
+    fetch(
+      `${context.config.META_ENDPOINT}symbol=${bigID}&CMC_PRO_API_KEY=${context.config.API_KEY}`,
+      {
+        method: 'GET',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.status);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const arr = Object.values(data.data);
+
+        setMetaPage(arr[0]);
+      })
+      .catch((err) => {
+        message.error(`Please try again later: ${err}`);
+      });
+  };
 
   useEffect(() => {
+    let isMounted = true;
     getCryptoData();
     getGraph(bigID);
-  }, [bigID, getCryptoData, getGraph]);
+    fetch(
+      `${context.config.META_ENDPOINT}symbol=${bigID}&CMC_PRO_API_KEY=${context.config.API_KEY}`,
+      {
+        method: 'GET',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.status);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const arr = Object.values(data.data);
+
+        if (isMounted) setMetaPage(arr[0]);
+      })
+      .catch((err) => {
+        message.error(`Please try again later: ${err}`);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [getCryptoData, getGraph, bigID]);
 
   const coins = context.cryptoData;
 
@@ -54,9 +118,39 @@ const CoinPage = () => {
     return boolThingy;
   });
 
-  const data = context.graphData || [];
-  console.log(context.graphData);
+  // const coinMetaData = [context.metaData];
 
+  // const getMetaPage = () => {
+  //   const { symbol } = id.symbol;
+  //   fetch(
+  //     `${config.META_ENDPOINT}symbol=${symbol}&CMC_PRO_API_KEY=${config.API_KEY}`,
+  //     {
+  //       method: 'GET',
+  //       headers: {
+  //         'Access-Control-Allow-Origin': '*',
+  //       },
+  //     }
+  //   )
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw new Error(res.status);
+  //       }
+  //       return res.json();
+  //     })
+  //     .then((data) => setMetaPage(data))
+  //     .catch((err) => {
+  //       message.error(`Please try again later: ${err}`);
+  //     });
+  // };
+
+  // const coinMeta = coinMetaData.find((p) => {
+  //   const boolThingy = p.symbol === id.symbol;
+  //   console.log(context.metaData);
+  //   return boolThingy;
+  // });
+
+  const data = context.graphData || [];
+  console.log(metaPage);
   const config = {
     data,
     padding: 'auto',
@@ -77,7 +171,7 @@ const CoinPage = () => {
 
   return (
     <>
-      {coinInfo ? (
+      {metaPage && coinInfo ? (
         <>
           <Typography>
             <Button type="link" className="link" href="/">
@@ -114,7 +208,7 @@ const CoinPage = () => {
                     color: '#a1998d',
                   }}
                 >
-                  {coinInfo.name} Price Today
+                  {coinInfo.name} Price
                 </ListSubTitleItem>
                 <div
                   style={{
@@ -138,7 +232,49 @@ const CoinPage = () => {
                 >
                   <ListTitleItem>Trading Volume(24h)</ListTitleItem>
                   <ListSubTitleItem>
-                    ${Number(coinInfo.quote.USD.volume_24h).toLocaleString()}
+                    {small
+                      ? abbreviate(
+                          coinInfo.quote.USD.volume_24h,
+                          2
+                        ).toUpperCase()
+                      : `$${Number(
+                          coinInfo.quote.USD.volume_24h
+                        ).toLocaleString()}`}
+                  </ListSubTitleItem>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                  }}
+                >
+                  <ListTitleItem>Market Cap</ListTitleItem>
+                  <ListSubTitleItem>
+                    {/* {
+                      small ? abbreviate(Number(coinInfo.quote.USD.market_cap),2) : {Number(coinInfo.quote.USD.market_cap).toLocaleString()}
+
+                    } */}
+                    {small
+                      ? abbreviate(
+                          coinInfo.quote.USD.market_cap,
+                          2
+                        ).toUpperCase()
+                      : `$${Number(
+                          coinInfo.quote.USD.market_cap
+                        ).toLocaleString()}`}
+                  </ListSubTitleItem>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                  }}
+                >
+                  <ListTitleItem>Market Rank</ListTitleItem>
+                  <ListSubTitleItem>
+                    #{Number(coinInfo.cmc_rank)}
                   </ListSubTitleItem>
                 </div>
                 <div
@@ -176,6 +312,118 @@ const CoinPage = () => {
                     borderBottom: '1px solid #867d6e',
                   }}
                 >
+                  <ListTitleItem>Price Change(7d)</ListTitleItem>
+                  <ListSubTitleItem>
+                    {Number(coinInfo.quote.USD.percent_change_7d)
+                      .toLocaleString()
+                      .includes('-') ? (
+                      <span style={{ color: '#eb4650' }}>
+                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_7d)
+                          .toLocaleString()
+                          .split('-')
+                          .pop()
+                          .trim()}%`}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#46ebac' }}>
+                        {`\u25B4${Number(
+                          coinInfo.quote.USD.percent_change_7d
+                        ).toLocaleString()}%`}
+                      </span>
+                    )}
+                  </ListSubTitleItem>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                  }}
+                >
+                  <ListTitleItem>Price Change(30d)</ListTitleItem>
+                  <ListSubTitleItem>
+                    {Number(coinInfo.quote.USD.percent_change_30d)
+                      .toLocaleString()
+                      .includes('-') ? (
+                      <span style={{ color: '#eb4650' }}>
+                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_30d)
+                          .toLocaleString()
+                          .split('-')
+                          .pop()
+                          .trim()}%`}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#46ebac' }}>
+                        {`\u25B4${Number(
+                          coinInfo.quote.USD.percent_change_30d
+                        ).toLocaleString()}%`}
+                      </span>
+                    )}
+                  </ListSubTitleItem>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                  }}
+                >
+                  <ListTitleItem>Price Change(60d)</ListTitleItem>
+                  <ListSubTitleItem>
+                    {Number(coinInfo.quote.USD.percent_change_60d)
+                      .toLocaleString()
+                      .includes('-') ? (
+                      <span style={{ color: '#eb4650' }}>
+                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_60d)
+                          .toLocaleString()
+                          .split('-')
+                          .pop()
+                          .trim()}%`}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#46ebac' }}>
+                        {`\u25B4${Number(
+                          coinInfo.quote.USD.percent_change_60d
+                        ).toLocaleString()}%`}
+                      </span>
+                    )}
+                  </ListSubTitleItem>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                  }}
+                >
+                  <ListTitleItem>Price Change(90d)</ListTitleItem>
+                  <ListSubTitleItem>
+                    {Number(coinInfo.quote.USD.percent_change_90d)
+                      .toLocaleString()
+                      .includes('-') ? (
+                      <span style={{ color: '#eb4650' }}>
+                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_90d)
+                          .toLocaleString()
+                          .split('-')
+                          .pop()
+                          .trim()}%`}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#46ebac' }}>
+                        {`\u25B4${Number(
+                          coinInfo.quote.USD.percent_change_90d
+                        ).toLocaleString()}%`}
+                      </span>
+                    )}
+                  </ListSubTitleItem>
+                </div>
+                {/* <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid #867d6e',
+                  }}
+                >
                   <ListTitleItem>Market Cap</ListTitleItem>
                   <ListSubTitleItem>
                     ${Number(coinInfo.quote.USD.market_cap).toLocaleString()}
@@ -192,7 +440,7 @@ const CoinPage = () => {
                   <ListSubTitleItem>
                     #{Number(coinInfo.cmc_rank)}
                   </ListSubTitleItem>
-                </div>
+                </div> */}
                 <div style={{ marginTop: 25 }}>
                   <ListSubTitleItem
                     style={{ fontSize: 12, fontWeight: 500, color: '#a1998d' }}
@@ -210,9 +458,13 @@ const CoinPage = () => {
                     <ListTitleItem>Max Supply</ListTitleItem>
                     <ListSubTitleItem>
                       {coinInfo.max_supply !== null ? (
-                        `${Number(coinInfo.max_supply).toLocaleString()} ${
-                          coinInfo.symbol
-                        }`
+                        small ? (
+                          abbreviate(coinInfo.max_supply, 2).toUpperCase()
+                        ) : (
+                          `${Number(coinInfo.max_supply).toLocaleString()} ${
+                            coinInfo.symbol
+                          }`
+                        )
                       ) : (
                         <div>No Data</div>
                       )}
@@ -223,15 +475,21 @@ const CoinPage = () => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       borderBottom: '1px solid #867d6e',
-                      borderTop: '1px solid #867d6e',
                     }}
                   >
                     <ListTitleItem>Circulating Supply</ListTitleItem>
                     <ListSubTitleItem>
                       {coinInfo.circulating_supply !== null ? (
-                        `${Number(
-                          coinInfo.circulating_supply
-                        ).toLocaleString()} ${coinInfo.symbol}`
+                        small ? (
+                          abbreviate(
+                            coinInfo.circulating_supply,
+                            2
+                          ).toUpperCase()
+                        ) : (
+                          `${Number(
+                            coinInfo.circulating_supply
+                          ).toLocaleString()} ${coinInfo.symbol}`
+                        )
                       ) : (
                         <div>No Data</div>
                       )}
@@ -242,18 +500,46 @@ const CoinPage = () => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       borderBottom: '1px solid #867d6e',
-                      borderTop: '1px solid #867d6e',
                     }}
                   >
                     <ListTitleItem>Total Supply</ListTitleItem>
                     <ListSubTitleItem>
                       {coinInfo.total_supply !== null ? (
-                        `${Number(coinInfo.total_supply).toLocaleString()} ${
-                          coinInfo.symbol
-                        }`
+                        small ? (
+                          abbreviate(coinInfo.total_supply, 2).toUpperCase()
+                        ) : (
+                          `${Number(coinInfo.total_supply).toLocaleString()} ${
+                            coinInfo.symbol
+                          }`
+                        )
                       ) : (
                         <div>No Data</div>
                       )}
+                    </ListSubTitleItem>
+                  </div>
+                </div>
+                <div style={{ marginTop: 25 }}>
+                  <ListSubTitleItem
+                    style={{ fontSize: 12, fontWeight: 500, color: '#a1998d' }}
+                  >
+                    {coinInfo.name} Tags
+                  </ListSubTitleItem>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      borderBottom: '1px solid #867d6e',
+                      borderTop: '1px solid #867d6e',
+                    }}
+                  >
+                    <ListSubTitleItem>
+                      {metaPage['tag-names'].slice(0, 4).map((tag) => {
+                        return (
+                          <Tag style={{ marginTop: 5 }} color="#108ee9">
+                            {tag}
+                          </Tag>
+                        );
+                      })}
                     </ListSubTitleItem>
                   </div>
                 </div>
