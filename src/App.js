@@ -23,9 +23,12 @@ import CoinPage from './containers/CoinPage/CoinPage';
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'segoe ui', Roboto,
+    Helvetica, Arial, sans-serif;
+
   min-height: 100vh;
   color: rgba(232, 230, 227, 0.85);
-  background-color: #181a1b;
+  background-color: rgb(23, 25, 25);
   ${({ isMobile }) => isMobile && 'overflow-x: hidden;'}
   max-width: 100%;
 `;

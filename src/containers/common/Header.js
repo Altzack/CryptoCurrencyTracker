@@ -14,7 +14,6 @@ const AppHeaderContainer = styled.div`
   min-height: 60px;
   position: fixed;
   width: 100vw;
-  font-family: Rubik;
   z-index: 99;
   /*background-color: #ff294a;*/
   color: #fff;
@@ -35,7 +34,6 @@ const HeaderSection = styled.div`
 `;
 
 const HeaderContentContainer = styled.div`
-  font-family: Rubik;
   font-weight: 500;
   max-width: 1200px;
   display: flex;
@@ -57,7 +55,6 @@ const StyledTitle = styled.h1`
   color: #fff;
   margin-bottom: 0;
   letter-spacing: 3px;
-  font-family: Rubik;
 `;
 
 const LogoLink = styled(Link)`
