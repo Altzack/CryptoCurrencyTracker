@@ -130,7 +130,7 @@ class App extends Component {
     const dateKeys = Object.keys(data['Time Series (Digital Currency Daily)']);
     const graphArray = [];
     let graphObj = {};
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 60; i++) {
       graphObj = {
         price: parseFloat(timeSeries[dateKeys[i]]['4b. close (USD)']),
         date: moment(dateKeys[i]).format('MM/DD'),

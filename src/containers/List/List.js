@@ -127,7 +127,8 @@ const CryptoList = () => {
                               fontSize: 14,
                             }}
                           >
-                            {item.name}
+                            {item.name.charAt(0).toUpperCase() +
+                              item.name.slice(1)}
                           </p>
                           <div
                             style={{
@@ -177,7 +178,8 @@ const CryptoList = () => {
                             fontSize: 14,
                           }}
                         >
-                          {item.name}
+                          {item.name.charAt(0).toUpperCase() +
+                            item.name.slice(1)}
                         </p>
                         <p
                           style={{

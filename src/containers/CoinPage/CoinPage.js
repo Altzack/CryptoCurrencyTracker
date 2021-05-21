@@ -1,14 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
+import '../../App.css';
 import { Button, Typography, message, Tag } from 'antd';
 import styled from 'styled-components/macro';
 import { Line } from '@ant-design/charts';
 import AppContext from '../../AppContext';
 import { useIsSmallScreen } from '../common/responsiveComponents';
-
-import config from '../../config';
 
 import Loader from '../common/Loader/Loader';
 
@@ -40,9 +38,72 @@ const ListSubTitleItem = styled.div`
   padding: 12px 1px 13px;
 `;
 
+const ConverterDiv = styled.div`
+  margin: 0px;
+  box-sizing: border-box;
+  position: relative;
+  margin-bottom: 16px;
+  border-color: rgb(52, 56, 58);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgb(52, 56, 58);
+`;
+
+const ConverterImg = styled.img`
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+  margin-right: 12px;
+`;
+
+const ConverteInputDiv = styled.div`
+  box-sizing: border-box;
+  margin: 0px;
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: row;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: end;
+  justify-content: flex-end;
+  color: rgb(34, 37, 49);
+`;
+
+const ConverteInput = styled.input`
+  padding: 10px 0px;
+  background: transparent;
+  caret-color: rgb(56, 97, 251);
+  border: none;
+  outline: none;
+  font-size: 18px;
+  text-align: right;
+  appearance: none;
+  color: rgb(207, 214, 228);
+  font-weight: 700;
+  font-family: Inter, sans-serif;
+  width: 100%;
+`;
+
+const ConverteSingleDiv = styled.div`
+  box-sizing: border-box;
+  margin: 0px;
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: row;
+  padding: 20px 24px;
+  background-color: rgb(255, 255, 255);
+  -webkit-box-align: center;
+  align-items: center;
+`;
+
 const CoinPage = () => {
   // const { Title, Paragraph, Text, Link } = Typography;
   const [metaPage, setMetaPage] = useState();
+  const [coinVal, setCoinVal] = useState();
+  const [usdVal, setUSDVal] = useState();
+
   const small = useIsSmallScreen();
 
   const context = useContext(AppContext);
@@ -52,32 +113,6 @@ const CoinPage = () => {
   // const { getMetaData } = context;
   const bigID = id.symbol;
   // const arg = context.cryptoData.map((item) => item.symbol);
-
-  const getMetaPage = () => {
-    fetch(
-      `${context.config.META_ENDPOINT}symbol=${bigID}&CMC_PRO_API_KEY=${context.config.API_KEY}`,
-      {
-        method: 'GET',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-      }
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.status);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        const arr = Object.values(data.data);
-
-        setMetaPage(arr[0]);
-      })
-      .catch((err) => {
-        message.error(`Please try again later: ${err}`);
-      });
-  };
 
   useEffect(() => {
     let isMounted = true;
@@ -109,7 +144,13 @@ const CoinPage = () => {
     return () => {
       isMounted = false;
     };
-  }, [getCryptoData, getGraph, bigID]);
+  }, [
+    getCryptoData,
+    getGraph,
+    bigID,
+    context.config.API_KEY,
+    context.config.META_ENDPOINT,
+  ]);
 
   const coins = context.cryptoData;
 
@@ -118,36 +159,38 @@ const CoinPage = () => {
     return boolThingy;
   });
 
-  // const coinMetaData = [context.metaData];
+  const coinInputOnChange = async () => {
+    const val = document.getElementById('coinInput').value;
+    console.log(val);
+    const convertedValInfo = await coinInfo;
+    const convertedValDollars = convertedValInfo.quote.USD.price;
+    const convertedVal = val * convertedValDollars;
+    console.log(convertedVal);
+    const formatVal = Number(convertedVal).toFixed(2);
+    setUSDVal(formatVal);
+    setCoinVal(val);
+  };
 
-  // const getMetaPage = () => {
-  //   const { symbol } = id.symbol;
-  //   fetch(
-  //     `${config.META_ENDPOINT}symbol=${symbol}&CMC_PRO_API_KEY=${config.API_KEY}`,
-  //     {
-  //       method: 'GET',
-  //       headers: {
-  //         'Access-Control-Allow-Origin': '*',
-  //       },
-  //     }
-  //   )
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         throw new Error(res.status);
-  //       }
-  //       return res.json();
-  //     })
-  //     .then((data) => setMetaPage(data))
-  //     .catch((err) => {
-  //       message.error(`Please try again later: ${err}`);
-  //     });
-  // };
+  const usdInputOnChange = async () => {
+    const val = document.getElementById('usdInput').value;
+    console.log(val);
+    const convertedValInfo = await coinInfo;
+    const convertedValDollars = convertedValInfo.quote.USD.price;
+    const convertedVal = val / convertedValDollars;
+    console.log(convertedVal);
+    const formatVal = Number(convertedVal).toFixed(4);
+    setCoinVal(formatVal);
+    setUSDVal(val);
+  };
 
-  // const coinMeta = coinMetaData.find((p) => {
-  //   const boolThingy = p.symbol === id.symbol;
-  //   console.log(context.metaData);
-  //   return boolThingy;
-  // });
+  const maxLengthCheck = (object) => {
+    if (object.target.value.length > object.target.maxLength) {
+      object.target.value = object.target.value.slice(
+        0,
+        object.target.maxLength
+      );
+    }
+  };
 
   const data = context.graphData || [];
   console.log(metaPage);
@@ -171,7 +214,7 @@ const CoinPage = () => {
 
   return (
     <>
-      {metaPage && coinInfo ? (
+      {metaPage && coinInfo && context.graphData ? (
         <>
           <Typography>
             <Button type="link" className="link" href="/">
@@ -179,13 +222,14 @@ const CoinPage = () => {
             </Button>
             <div>
               <StyledDiv>
-                <TitleItem>{coinInfo.name} chart (30d)</TitleItem>
+                <TitleItem>{coinInfo.name} chart (60d)</TitleItem>
+
                 {/* <TitleItem>
                   ${Number(coinInfo.quote.USD.price).toLocaleString()}
                 </TitleItem> */}
               </StyledDiv>
             </div>
-            <div style={{ padding: 20 }}>
+            <div style={{ padding: 5 }}>
               <Line {...config} />
             </div>
             {/* <div style={{ boxSizing: 'border-box', marginBottom: 16 }}>
@@ -194,6 +238,69 @@ const CoinPage = () => {
               <div />
             </div> */}
             <div style={{ padding: 24 }}>
+              <ConverterDiv>
+                <ConverteSingleDiv style={{ background: 'rgb(24, 26, 27)' }}>
+                  <ConverterImg alt="logo" src={metaPage.logo} />
+                  <div style={{ margin: 0, boxSizing: 'border-box' }}>
+                    <p style={{ margin: 0, color: 'rgb(164, 157, 145)' }}>
+                      {coinInfo.symbol}
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: 'rgb(206, 202, 195)',
+                        fontSize: 14,
+                      }}
+                    >
+                      {coinInfo.name}
+                    </p>
+                  </div>
+                  <ConverteInputDiv>
+                    <ConverteInput
+                      id="coinInput"
+                      type="number"
+                      pattern="/^-?d+.?d*$/"
+                      value={coinVal}
+                      maxLength="10"
+                      onInput={maxLengthCheck}
+                      placeholder="0"
+                      onChange={coinInputOnChange}
+                    />
+                  </ConverteInputDiv>
+                </ConverteSingleDiv>
+                <ConverteSingleDiv style={{ background: 'rgb(27, 29, 30)' }}>
+                  <ConverterImg
+                    alt="logo"
+                    src="https://s2.coinmarketcap.com/static/cloud/img/fiat-flags/USD.svg"
+                  />
+                  <div style={{ margin: 0, boxSizing: 'border-box' }}>
+                    <p style={{ margin: 0, color: 'rgb(164, 157, 145)' }}>
+                      USD
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: 'rgb(206, 202, 195)',
+                        fontSize: 14,
+                      }}
+                    >
+                      United States Dollar
+                    </p>
+                  </div>
+                  <ConverteInputDiv>
+                    <ConverteInput
+                      id="usdInput"
+                      pattern="/^-?d+.?d*$/"
+                      value={usdVal}
+                      type="number"
+                      maxLength="10"
+                      onInput={maxLengthCheck}
+                      placeholder="0"
+                      onChange={usdInputOnChange}
+                    />
+                  </ConverteInputDiv>
+                </ConverteSingleDiv>
+              </ConverterDiv>
               <div
                 style={{ padding: 24, borderRadius: 16, background: '#1B1d1e' }}
               >
