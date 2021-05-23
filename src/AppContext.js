@@ -11,6 +11,7 @@ const AppContext = React.createContext({
   metaData: [],
   getMetaData: () => {},
   config: {},
+  error: false,
 });
 
 export default AppContext;

@@ -58,6 +58,7 @@ class App extends Component {
       loading: true,
       graphData: [],
       metaData: [],
+      error: false,
     };
   }
 
@@ -163,7 +164,7 @@ class App extends Component {
       })
       .then(this.setGraphData)
       .catch((err) => {
-        message.error(`Please try again later: ${err}`);
+        this.setState({ error: true });
       });
   };
 
@@ -185,9 +186,7 @@ class App extends Component {
         return res.json();
       })
       .then(this.setMetaData)
-      .catch((err) => {
-        message.error(`Please try again later: ${err}`);
-      });
+      .catch((err) => {});
   };
   render() {
     const contextValues = {
@@ -200,6 +199,7 @@ class App extends Component {
       getCryptoData: this.getCryptoData,
       config: config,
       getMetaData: this.getMetaData,
+      error: this.state.error,
     };
     return (
       <AppContext.Provider value={contextValues}>

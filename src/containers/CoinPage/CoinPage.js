@@ -2,8 +2,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../../App.css';
-import { Button, Typography, message, Tag } from 'antd';
+import { Button, Typography, Tag, Modal, Divider } from 'antd';
 import styled from 'styled-components/macro';
+import './CoinPage.css';
 import { Line } from '@ant-design/charts';
 import AppContext from '../../AppContext';
 import { useIsSmallScreen } from '../common/responsiveComponents';
@@ -11,12 +12,6 @@ import { useIsSmallScreen } from '../common/responsiveComponents';
 import Loader from '../common/Loader/Loader';
 
 const abbreviate = require('number-abbreviate');
-
-const StyledDiv = styled.div`
-  display: inline-flex;
-  justify-content: flex-start;
-  margin-left: 50px;
-`;
 
 const TitleItem = styled.div`
   color: #fff;
@@ -38,6 +33,26 @@ const ListSubTitleItem = styled.div`
   padding: 12px 1px 13px;
 `;
 
+const NamePill = styled.div`
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  margin-right: 8px;
+  white-space: nowrap;
+`;
+
+const NamePillSpan = styled.span`
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  margin-right: 8px;
+  white-space: nowrap;
+`;
+
 const ConverterDiv = styled.div`
   margin: 0px;
   box-sizing: border-box;
@@ -56,6 +71,15 @@ const ConverterImg = styled.img`
   width: 32px;
   border-radius: 16px;
   margin-right: 12px;
+`;
+
+const HeaderCon = styled.div`
+  width: 100%;
+  max-width: 1400px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
 `;
 
 const ConverteInputDiv = styled.div`
@@ -103,7 +127,7 @@ const CoinPage = () => {
   const [metaPage, setMetaPage] = useState();
   const [coinVal, setCoinVal] = useState();
   const [usdVal, setUSDVal] = useState();
-
+  const [modal, setModal] = useState(false);
   const small = useIsSmallScreen();
 
   const context = useContext(AppContext);
@@ -138,9 +162,7 @@ const CoinPage = () => {
 
         if (isMounted) setMetaPage(arr[0]);
       })
-      .catch((err) => {
-        message.error(`Please try again later: ${err}`);
-      });
+      .catch((err) => {});
     return () => {
       isMounted = false;
     };
@@ -212,6 +234,14 @@ const CoinPage = () => {
     },
   };
 
+  const setModalFunc = () => {
+    setModal(true);
+  };
+
+  const setModalCloseFunc = () => {
+    setModal(false);
+  };
+
   return (
     <>
       {metaPage && coinInfo && context.graphData ? (
@@ -220,16 +250,233 @@ const CoinPage = () => {
             <Button type="link" className="link" href="/">
               go back
             </Button>
+            <HeaderCon style={{ marginBottom: 10, marginTop: 10 }}>
+              <div
+                style={{
+                  marginBottom: 15,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ display: 'flex' }}>
+                    <img
+                      style={{ height: 32, width: 32 }}
+                      src={metaPage.logo}
+                      alt="logo"
+                    />
+                    <h2
+                      style={{
+                        margin: 0,
+                        color: '#e8e6e3',
+                        marginLeft: 10,
+                        fontSize: 25,
+                      }}
+                    >
+                      {coinInfo.name}
+                    </h2>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexDirection: 'column',
+                      justifyContent: 'flex-start',
+                      marginTop: 12,
+                    }}
+                  >
+                    <h2
+                      style={{
+                        margin: 0,
+                        color: '#e8e6e3',
+                        fontSize: 20,
+                      }}
+                    >
+                      ${Number(coinInfo.quote.USD.price).toLocaleString()}
+                    </h2>
+                    <div
+                      style={{
+                        display: 'flex',
+                        width: '100%',
+                        justifyContent: 'flex-end',
+                      }}
+                    >
+                      {Number(coinInfo.quote.USD.percent_change_24h)
+                        .toLocaleString()
+                        .includes('-') ? (
+                        <NamePillSpan
+                          style={{
+                            background: '#eb4650',
+                            color: '#e8e6e3',
+                            fontWeight: 500,
+                            fontSize: 14,
+                          }}
+                        >
+                          {`\u25BE${Number(
+                            coinInfo.quote.USD.percent_change_24h
+                          )
+                            .toLocaleString()
+                            .split('-')
+                            .pop()
+                            .trim()}%`}
+                        </NamePillSpan>
+                      ) : (
+                        <NamePill
+                          style={{
+                            background: '#129f6a',
+                            color: '#e8e6e3',
+                            fontWeight: 500,
+                            fontSize: 14,
+                          }}
+                        >
+                          {`\u25B4${Number(
+                            coinInfo.quote.USD.percent_change_24h
+                          ).toLocaleString()}%`}
+                        </NamePill>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'flex' }}>
+                <NamePill
+                  style={{
+                    background: '#515969',
+                    color: 'rgb(232, 230, 227)',
+                  }}
+                >
+                  {coinInfo.symbol}
+                </NamePill>
+                <NamePill
+                  style={{
+                    background: '#515969',
+                    color: 'rgb(232, 230, 227)',
+                  }}
+                >
+                  Rank #{coinInfo.cmc_rank}
+                </NamePill>
+                <NamePill
+                  style={{
+                    background: '#515969',
+                    color: 'rgb(232, 230, 227)',
+                  }}
+                >
+                  {metaPage.category.charAt(0).toUpperCase() +
+                    metaPage.category.slice(1)}
+                </NamePill>
+                <NamePill
+                  onClick={setModalFunc}
+                  className="linkButton"
+                  style={{
+                    background: '#108ee9',
+                    color: 'rgb(232, 230, 227)',
+                  }}
+                >
+                  Links
+                </NamePill>
+                <Modal
+                  footer={null}
+                  visible={modal}
+                  onCancel={setModalCloseFunc}
+                >
+                  <h2 style={{ margin: 0 }}>Links</h2>
+                  <Divider style={{ margin: 0, marginBottom: 10 }} />
+                  <ul>
+                    {metaPage.urls.website ? (
+                      <li>
+                        <a href={metaPage.urls.website}>Website</a>
+                      </li>
+                    ) : (
+                      ''
+                    )}
+                    {metaPage.urls.source_code ? (
+                      <li>
+                        <a href={metaPage.urls.source_code}>Source Code</a>
+                      </li>
+                    ) : (
+                      ''
+                    )}
+                    {metaPage.urls.technical_doc ? (
+                      <li>
+                        <a href={metaPage.urls.technical_doc}>Technical Doc</a>
+                      </li>
+                    ) : (
+                      ''
+                    )}
+                  </ul>
+                  <h2 style={{ margin: 0 }}>Explorer</h2>
+                  <Divider style={{ margin: 0, marginBottom: 10 }} />
+                  <ul>
+                    {metaPage.urls.explorer.map((item) => {
+                      return (
+                        <li>
+                          <a href={item}>{item}</a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <h2 style={{ margin: 0 }}>Community</h2>
+                  <Divider style={{ margin: 0, marginBottom: 10 }} />
+                  <ul>
+                    {metaPage.urls.twitter ? (
+                      <li>
+                        <a href={metaPage.urls.twitter}>Twitter</a>
+                      </li>
+                    ) : (
+                      ''
+                    )}
+                    {metaPage.urls.reddit ? (
+                      <li>
+                        <a href={metaPage.urls.reddit}>Reddit</a>
+                      </li>
+                    ) : (
+                      ''
+                    )}
+                    {metaPage.urls.message_board ? (
+                      <li>
+                        <a href={metaPage.urls.message_board}>Message Board</a>
+                      </li>
+                    ) : (
+                      ''
+                    )}
+                  </ul>
+                </Modal>
+              </div>
+              <Divider style={{ borderColor: '#34383a', marginBottom: 10 }} />
+            </HeaderCon>
             <div>
-              <StyledDiv>
-                <TitleItem>{coinInfo.name} chart (60d)</TitleItem>
+              {/* <StyledDiv>
+                {context.error ? (
+                  <TitleItem>No Chart Data</TitleItem>
+                ) : (
+                  <>
+                    <TitleItem>{coinInfo.name} chart (60d)</TitleItem>
+                  </>
+                )} */}
 
-                {/* <TitleItem>
+              {/* <TitleItem>
                   ${Number(coinInfo.quote.USD.price).toLocaleString()}
                 </TitleItem> */}
-              </StyledDiv>
+              {/* </StyledDiv> */}
+              {/* <Divider style={{ borderColor: '#34383a' }} /> */}
             </div>
-            <div style={{ padding: 5 }}>
+            <div style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 5 }}>
+              {context.error ? (
+                <TitleItem>No Chart Data</TitleItem>
+              ) : (
+                <>
+                  <TitleItem>{coinInfo.name} chart (60d)</TitleItem>
+                </>
+              )}
+              <Divider style={{ borderColor: '#34383a', marginTop: 15 }} />
+
               <Line {...config} />
             </div>
             {/* <div style={{ boxSizing: 'border-box', marginBottom: 16 }}>
@@ -642,7 +889,7 @@ const CoinPage = () => {
                     <ListSubTitleItem>
                       {metaPage['tag-names'].slice(0, 4).map((tag) => {
                         return (
-                          <Tag style={{ marginTop: 5 }} color="#108ee9">
+                          <Tag style={{ marginTop: 5 }} color="#515969">
                             {tag}
                           </Tag>
                         );
