@@ -12,18 +12,11 @@ const AppHeaderContainer = styled.div`
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   min-height: 60px;
-  position: fixed;
   width: 100vw;
   z-index: 99;
   /*background-color: #ff294a;*/
   color: #fff;
   background-color: rgb(27, 29, 30);
-`;
-
-const FooterSeparator = styled.span`
-  padding: 0 10px;
-  margin-top: 2px;
-  color: #364966;
 `;
 
 const HeaderSection = styled.div`
@@ -35,7 +28,6 @@ const HeaderSection = styled.div`
 
 const HeaderContentContainer = styled.div`
   font-weight: 500;
-  max-width: 1200px;
   display: flex;
   margin: 0 auto;
   justify-content: space-between;
@@ -51,7 +43,7 @@ const HeaderContentContainer = styled.div`
 //   }
 // `;
 
-const StyledTitle = styled.h1`
+const StyledTitle = styled.h2`
   color: #fff;
   margin-bottom: 0;
   letter-spacing: 3px;
@@ -79,17 +71,20 @@ export default function Header() {
     <AppHeaderContainer>
       <DesktopOnly>
         <HeaderContentContainer>
-          <HeaderSection style={{ justifyContent: 'flex-start' }}>
+          <HeaderSection
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'flex-start',
+              width: '100%',
+              paddingLeft: 10,
+            }}
+          >
             <LogoLink to="/">
               <StyledTitle>CryptoTrack</StyledTitle>
-            </LogoLink>
-            <FooterSeparator />
+            </LogoLink>{' '}
           </HeaderSection>
-          <HeaderSection style={{ justifyContent: 'center' }}>
-            <LogoLink to="/">
-              <StyledTitle />
-            </LogoLink>
-          </HeaderSection>
+          <HeaderSection style={{ justifyContent: 'center' }} />
           <HeaderSection style={{ justifyContent: 'flex-end' }} />
         </HeaderContentContainer>
       </DesktopOnly>

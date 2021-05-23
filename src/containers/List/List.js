@@ -45,7 +45,6 @@ const CryptoList = () => {
       logo: context.metaData.find((i) => i.symbol === item.symbol),
     };
   });
-  console.log(priceList);
 
   return (
     <>

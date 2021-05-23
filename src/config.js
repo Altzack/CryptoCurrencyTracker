@@ -8,4 +8,6 @@ export default {
   GRAPH_KEY: '1I7VDVD0HOFGSF6L',
   META_ENDPOINT:
     'https://boiling-bastion-93969.herokuapp.com/https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?',
+  GLOBAL_METRIC:
+    'https://boiling-bastion-93969.herokuapp.com/https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest?',
 };

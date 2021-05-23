@@ -7,6 +7,7 @@ const AppContext = React.createContext({
   graphData: [],
   getGraph: () => {},
   treeMap: false,
+  globalMetric: [],
   getCryptoData: () => {},
   metaData: [],
   getMetaData: () => {},

@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../../App.css';
-import { Button, Typography, Tag, Modal, Divider } from 'antd';
+import { Typography, Tag, Modal, Divider } from 'antd';
 import styled from 'styled-components/macro';
 import './CoinPage.css';
 import { Line } from '@ant-design/charts';
@@ -75,7 +75,6 @@ const ConverterImg = styled.img`
 
 const HeaderCon = styled.div`
   width: 100%;
-  max-width: 1400px;
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
@@ -183,11 +182,9 @@ const CoinPage = () => {
 
   const coinInputOnChange = async () => {
     const val = document.getElementById('coinInput').value;
-    console.log(val);
     const convertedValInfo = await coinInfo;
     const convertedValDollars = convertedValInfo.quote.USD.price;
     const convertedVal = val * convertedValDollars;
-    console.log(convertedVal);
     const formatVal = Number(convertedVal).toFixed(2);
     setUSDVal(formatVal);
     setCoinVal(val);
@@ -195,11 +192,9 @@ const CoinPage = () => {
 
   const usdInputOnChange = async () => {
     const val = document.getElementById('usdInput').value;
-    console.log(val);
     const convertedValInfo = await coinInfo;
     const convertedValDollars = convertedValInfo.quote.USD.price;
     const convertedVal = val / convertedValDollars;
-    console.log(convertedVal);
     const formatVal = Number(convertedVal).toFixed(4);
     setCoinVal(formatVal);
     setUSDVal(val);
@@ -215,7 +210,6 @@ const CoinPage = () => {
   };
 
   const data = context.graphData || [];
-  console.log(metaPage);
   const config = {
     data,
     padding: 'auto',
@@ -247,226 +241,230 @@ const CoinPage = () => {
       {metaPage && coinInfo && context.graphData ? (
         <>
           <Typography>
-            <Button type="link" className="link" href="/">
+            {/* <Button type="link" className="link" href="/">
               go back
-            </Button>
-            <HeaderCon style={{ marginBottom: 10, marginTop: 10 }}>
-              <div
+            </Button> */}
+            <div
+              style={{
+                display: 'flex',
+
+                width: '100%',
+              }}
+            >
+              <HeaderCon
                 style={{
-                  marginBottom: 15,
-                  display: 'flex',
-                  alignItems: 'center',
+                  marginBottom: 10,
+                  marginTop: 10,
+
+                  width: '100%',
                 }}
               >
                 <div
                   style={{
-                    display: 'inline-flex',
+                    marginBottom: 15,
+                    display: 'flex',
                     alignItems: 'center',
-                    width: '100%',
-                    justifyContent: 'space-between',
                   }}
                 >
-                  <div style={{ display: 'flex' }}>
-                    <img
-                      style={{ height: 32, width: 32 }}
-                      src={metaPage.logo}
-                      alt="logo"
-                    />
-                    <h2
-                      style={{
-                        margin: 0,
-                        color: '#e8e6e3',
-                        marginLeft: 10,
-                        fontSize: 25,
-                      }}
-                    >
-                      {coinInfo.name}
-                    </h2>
-                  </div>
                   <div
                     style={{
-                      display: 'flex',
+                      display: 'inline-flex',
                       alignItems: 'center',
-                      flexDirection: 'column',
-                      justifyContent: 'flex-start',
-                      marginTop: 12,
+                      width: '100%',
+                      justifyContent: 'space-between',
                     }}
                   >
-                    <h2
-                      style={{
-                        margin: 0,
-                        color: '#e8e6e3',
-                        fontSize: 20,
-                      }}
-                    >
-                      ${Number(coinInfo.quote.USD.price).toLocaleString()}
-                    </h2>
+                    <div style={{ display: 'flex' }}>
+                      <img
+                        style={{ height: 32, width: 32 }}
+                        src={metaPage.logo}
+                        alt="logo"
+                      />
+                      <h2
+                        style={{
+                          margin: 0,
+                          color: '#e8e6e3',
+                          marginLeft: 10,
+                          fontSize: 25,
+                        }}
+                      >
+                        {coinInfo.name}
+                      </h2>
+                    </div>
                     <div
                       style={{
                         display: 'flex',
-                        width: '100%',
-                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        justifyContent: 'flex-start',
+                        marginTop: 12,
                       }}
                     >
-                      {Number(coinInfo.quote.USD.percent_change_24h)
-                        .toLocaleString()
-                        .includes('-') ? (
-                        <NamePillSpan
-                          style={{
-                            background: '#eb4650',
-                            color: '#e8e6e3',
-                            fontWeight: 500,
-                            fontSize: 14,
-                          }}
-                        >
-                          {`\u25BE${Number(
-                            coinInfo.quote.USD.percent_change_24h
-                          )
-                            .toLocaleString()
-                            .split('-')
-                            .pop()
-                            .trim()}%`}
-                        </NamePillSpan>
-                      ) : (
-                        <NamePill
-                          style={{
-                            background: '#129f6a',
-                            color: '#e8e6e3',
-                            fontWeight: 500,
-                            fontSize: 14,
-                          }}
-                        >
-                          {`\u25B4${Number(
-                            coinInfo.quote.USD.percent_change_24h
-                          ).toLocaleString()}%`}
-                        </NamePill>
-                      )}
+                      <h2
+                        style={{
+                          margin: 0,
+                          color: '#e8e6e3',
+                          fontSize: 20,
+                        }}
+                      >
+                        ${Number(coinInfo.quote.USD.price).toLocaleString()}
+                      </h2>
+                      <div
+                        style={{
+                          display: 'flex',
+                          width: '100%',
+                          justifyContent: 'flex-end',
+                        }}
+                      >
+                        {Number(coinInfo.quote.USD.percent_change_24h)
+                          .toLocaleString()
+                          .includes('-') ? (
+                          <NamePillSpan
+                            style={{
+                              background: '#A5111A',
+                              color: '#e8e6e3',
+                              fontWeight: 500,
+                              fontSize: 14,
+                            }}
+                          >
+                            {`\u25BE${Number(
+                              coinInfo.quote.USD.percent_change_24h
+                            )
+                              .toLocaleString()
+                              .split('-')
+                              .pop()
+                              .trim()}%`}
+                          </NamePillSpan>
+                        ) : (
+                          <NamePill
+                            style={{
+                              background: '#129f6a',
+                              color: '#e8e6e3',
+                              fontWeight: 500,
+                              fontSize: 14,
+                            }}
+                          >
+                            {`\u25B4${Number(
+                              coinInfo.quote.USD.percent_change_24h
+                            ).toLocaleString()}%`}
+                          </NamePill>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div style={{ display: 'flex' }}>
-                <NamePill
-                  style={{
-                    background: '#515969',
-                    color: 'rgb(232, 230, 227)',
-                  }}
-                >
-                  {coinInfo.symbol}
-                </NamePill>
-                <NamePill
-                  style={{
-                    background: '#515969',
-                    color: 'rgb(232, 230, 227)',
-                  }}
-                >
-                  Rank #{coinInfo.cmc_rank}
-                </NamePill>
-                <NamePill
-                  style={{
-                    background: '#515969',
-                    color: 'rgb(232, 230, 227)',
-                  }}
-                >
-                  {metaPage.category.charAt(0).toUpperCase() +
-                    metaPage.category.slice(1)}
-                </NamePill>
-                <NamePill
-                  onClick={setModalFunc}
-                  className="linkButton"
-                  style={{
-                    background: '#108ee9',
-                    color: 'rgb(232, 230, 227)',
-                  }}
-                >
-                  Links
-                </NamePill>
-                <Modal
-                  footer={null}
-                  visible={modal}
-                  onCancel={setModalCloseFunc}
-                >
-                  <h2 style={{ margin: 0 }}>Links</h2>
-                  <Divider style={{ margin: 0, marginBottom: 10 }} />
-                  <ul>
-                    {metaPage.urls.website ? (
-                      <li>
-                        <a href={metaPage.urls.website}>Website</a>
-                      </li>
-                    ) : (
-                      ''
-                    )}
-                    {metaPage.urls.source_code ? (
-                      <li>
-                        <a href={metaPage.urls.source_code}>Source Code</a>
-                      </li>
-                    ) : (
-                      ''
-                    )}
-                    {metaPage.urls.technical_doc ? (
-                      <li>
-                        <a href={metaPage.urls.technical_doc}>Technical Doc</a>
-                      </li>
-                    ) : (
-                      ''
-                    )}
-                  </ul>
-                  <h2 style={{ margin: 0 }}>Explorer</h2>
-                  <Divider style={{ margin: 0, marginBottom: 10 }} />
-                  <ul>
-                    {metaPage.urls.explorer.map((item) => {
-                      return (
+                <div style={{ display: 'flex' }}>
+                  <NamePill
+                    style={{
+                      background: '#515969',
+                      color: 'rgb(232, 230, 227)',
+                    }}
+                  >
+                    {coinInfo.symbol}
+                  </NamePill>
+                  <NamePill
+                    style={{
+                      background: '#515969',
+                      color: 'rgb(232, 230, 227)',
+                    }}
+                  >
+                    Rank #{coinInfo.cmc_rank}
+                  </NamePill>
+                  <NamePill
+                    style={{
+                      background: '#515969',
+                      color: 'rgb(232, 230, 227)',
+                    }}
+                  >
+                    {metaPage.category.charAt(0).toUpperCase() +
+                      metaPage.category.slice(1)}
+                  </NamePill>
+                  <NamePill
+                    onClick={setModalFunc}
+                    className="linkButton"
+                    style={{
+                      background: '#108ee9',
+                      color: 'rgb(232, 230, 227)',
+                    }}
+                  >
+                    Links
+                  </NamePill>
+                  <Modal
+                    footer={null}
+                    visible={modal}
+                    onCancel={setModalCloseFunc}
+                  >
+                    <h2 style={{ margin: 0 }}>Links</h2>
+                    <Divider style={{ margin: 0, marginBottom: 10 }} />
+                    <ul>
+                      {metaPage.urls.website ? (
                         <li>
-                          <a href={item}>{item}</a>
+                          <a href={metaPage.urls.website}>Website</a>
                         </li>
-                      );
-                    })}
-                  </ul>
-                  <h2 style={{ margin: 0 }}>Community</h2>
-                  <Divider style={{ margin: 0, marginBottom: 10 }} />
-                  <ul>
-                    {metaPage.urls.twitter ? (
-                      <li>
-                        <a href={metaPage.urls.twitter}>Twitter</a>
-                      </li>
-                    ) : (
-                      ''
-                    )}
-                    {metaPage.urls.reddit ? (
-                      <li>
-                        <a href={metaPage.urls.reddit}>Reddit</a>
-                      </li>
-                    ) : (
-                      ''
-                    )}
-                    {metaPage.urls.message_board ? (
-                      <li>
-                        <a href={metaPage.urls.message_board}>Message Board</a>
-                      </li>
-                    ) : (
-                      ''
-                    )}
-                  </ul>
-                </Modal>
-              </div>
-              <Divider style={{ borderColor: '#34383a', marginBottom: 10 }} />
-            </HeaderCon>
-            <div>
-              {/* <StyledDiv>
-                {context.error ? (
-                  <TitleItem>No Chart Data</TitleItem>
-                ) : (
-                  <>
-                    <TitleItem>{coinInfo.name} chart (60d)</TitleItem>
-                  </>
-                )} */}
-
-              {/* <TitleItem>
-                  ${Number(coinInfo.quote.USD.price).toLocaleString()}
-                </TitleItem> */}
-              {/* </StyledDiv> */}
-              {/* <Divider style={{ borderColor: '#34383a' }} /> */}
+                      ) : (
+                        ''
+                      )}
+                      {metaPage.urls.source_code ? (
+                        <li>
+                          <a href={metaPage.urls.source_code}>Source Code</a>
+                        </li>
+                      ) : (
+                        ''
+                      )}
+                      {metaPage.urls.technical_doc ? (
+                        <li>
+                          <a href={metaPage.urls.technical_doc}>
+                            Technical Doc
+                          </a>
+                        </li>
+                      ) : (
+                        ''
+                      )}
+                    </ul>
+                    <h2 style={{ margin: 0 }}>Explorer</h2>
+                    <Divider style={{ margin: 0, marginBottom: 10 }} />
+                    <ul>
+                      {metaPage.urls.explorer.map((item) => {
+                        return (
+                          <li>
+                            <a href={item}>{item}</a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <h2 style={{ margin: 0 }}>Community</h2>
+                    <Divider style={{ margin: 0, marginBottom: 10 }} />
+                    <ul>
+                      {metaPage.urls.twitter ? (
+                        <li>
+                          <a href={metaPage.urls.twitter}>Twitter</a>
+                        </li>
+                      ) : (
+                        ''
+                      )}
+                      {metaPage.urls.reddit ? (
+                        <li>
+                          <a href={metaPage.urls.reddit}>Reddit</a>
+                        </li>
+                      ) : (
+                        ''
+                      )}
+                      {metaPage.urls.message_board ? (
+                        <li>
+                          <a href={metaPage.urls.message_board}>
+                            Message Board
+                          </a>
+                        </li>
+                      ) : (
+                        ''
+                      )}
+                    </ul>
+                  </Modal>
+                </div>
+                <Divider style={{ borderColor: '#34383a', marginBottom: 10 }} />
+              </HeaderCon>
             </div>
+
             <div style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 5 }}>
               {context.error ? (
                 <TitleItem>No Chart Data</TitleItem>

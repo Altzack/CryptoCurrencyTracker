@@ -19,6 +19,7 @@ import AppContext from './AppContext';
 import LandingPage from './containers/LandingPage/LandingPage';
 import config from './config';
 import CoinPage from './containers/CoinPage/CoinPage';
+import GlobalMetrics from './containers/common/GlobalMetrics';
 
 const AppContainer = styled.div`
   display: flex;
@@ -35,7 +36,6 @@ const AppContainer = styled.div`
 
 const ContentContainer = styled.div`
   flex-grow: 1;
-  padding-top: 64px;
   min-height: 100vh;
 `;
 
@@ -44,6 +44,7 @@ const AppWrapper = withRouter(({ children }) => {
   return (
     <AppContainer isMobile={isTabletOrMobile}>
       <Header />
+      <GlobalMetrics />
       <ContentContainer>{children}</ContentContainer>
       <Footer />
     </AppContainer>
@@ -58,6 +59,7 @@ class App extends Component {
       loading: true,
       graphData: [],
       metaData: [],
+      globalMetric: [],
       error: false,
     };
   }
@@ -71,6 +73,18 @@ class App extends Component {
 
     this.setState({
       cryptoData: data.data,
+    });
+  };
+
+  setGlobalMetric = (data) => {
+    // const newObj = data.data.map((e) => ({
+    //   checked: false,
+    //   graphData: [e.quote.USD],
+    //   ...e,
+    // }));
+
+    this.setState({
+      globalMetric: data.data,
     });
   };
 
@@ -111,21 +125,6 @@ class App extends Component {
       });
   };
 
-  // checkGraph = (id) => {
-  //   // 1. Make a shallow copy of the items
-  //   const items = [...this.state.cryptoData];
-  //   // 2. Make a shallow copy of the item you want to mutate
-  //   const item = { ...items[id - 1] };
-  //   // 3. Replace the property you're intested in
-  //   item.checked = !item.checked;
-  //   // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-  //   items[id - 1] = item;
-  //   // 5. Set the state to our new copy
-  //   this.setState({ cryptoData: items });
-
-  //   console.log(this.state.cryptoData);
-  // };
-
   setGraphData = (data) => {
     const timeSeries = data['Time Series (Digital Currency Daily)'];
     const dateKeys = Object.keys(data['Time Series (Digital Currency Daily)']);
@@ -146,6 +145,7 @@ class App extends Component {
 
   componentDidMount = () => {
     this.getCryptoData();
+    this.getGlobalMetrics();
   };
 
   getGraph = (item) => {
@@ -188,6 +188,24 @@ class App extends Component {
       .then(this.setMetaData)
       .catch((err) => {});
   };
+
+  getGlobalMetrics = () => {
+    fetch(`${config.GLOBAL_METRIC}&CMC_PRO_API_KEY=${config.API_KEY}`, {
+      method: 'GET',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.status);
+        }
+        return res.json();
+      })
+      .then(this.setGlobalMetric)
+      .catch((err) => {});
+  };
+
   render() {
     const contextValues = {
       cryptoData: this.state.cryptoData || [],
@@ -200,6 +218,7 @@ class App extends Component {
       config: config,
       getMetaData: this.getMetaData,
       error: this.state.error,
+      globalMetric: this.state.globalMetric,
     };
     return (
       <AppContext.Provider value={contextValues}>
