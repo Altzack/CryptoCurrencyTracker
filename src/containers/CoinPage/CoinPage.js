@@ -253,7 +253,6 @@ const CoinPage = () => {
             >
               <HeaderCon
                 style={{
-                  marginBottom: 10,
                   marginTop: 10,
 
                   width: '100%',

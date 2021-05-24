@@ -50,7 +50,11 @@ export default function GlobalMetrics() {
         <Span>
           Defi Volume(24h):{' '}
           <SpanItem>
-            ${Number(context.globalMetric.defi_volume_24h).toLocaleString()}
+            $
+            {Number(context.globalMetric.defi_volume_24h)
+              .toLocaleString()
+              .split('.')
+              .shift()}
           </SpanItem>
         </Span>
       </div>
