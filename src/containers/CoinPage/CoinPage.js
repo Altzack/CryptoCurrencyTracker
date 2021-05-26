@@ -6,6 +6,7 @@ import { Typography, Tag, Modal, Divider } from 'antd';
 import styled from 'styled-components/macro';
 import './CoinPage.css';
 import { Line } from '@ant-design/charts';
+import moment from 'moment';
 import AppContext from '../../AppContext';
 import { useIsSmallScreen } from '../common/responsiveComponents';
 
@@ -17,6 +18,103 @@ const TitleItem = styled.div`
   color: #fff;
   font-weight: 500;
   font-size: 22px;
+`;
+
+const NewsContainer = styled.article`
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  display: flex;
+  margin: -1px -24px;
+  border-bottom: 1px solid #34383a;
+  padding: 8px 10px;
+  :hover {
+    background-color: rgb(40, 47, 51);
+  }
+  @media (min-width: 300px) {
+    width: 320px;
+  }
+  @media (min-width: 600px) {
+    width: 550px;
+  }
+  @media (min-width: 900px) {
+    width: 800px;
+  }
+`;
+
+const PageContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  flex-direction: column;
+  margin-top: 15px;
+  flex-wrap: wrap;
+`;
+
+const Title = styled.div`
+  font-family: Rubik;
+  font-weight: 300;
+  text-align: left;
+  font-size: 16px;
+  text-transform: capitalize;
+  color: #e8e6e3;
+  margin-bottom: 10px;
+  @media (min-width: 300px) {
+    font-size: 11px;
+    width: 200px;
+  }
+  @media (min-width: 600px) {
+    font-size: 13px;
+    width: 350px;
+  }
+  @media (min-width: 900px) {
+    font-size: 14px;
+    width: 600px;
+  }
+`;
+
+const SubTitle = styled.div`
+  font-family: Rubik;
+  color: #e8e6e3;
+  font-weight: 400;
+  text-align: left;
+  max-width: 500px;
+  margin-top: 5px;
+  font-size: 10px;
+  margin-bottom: 10px;
+  @media (min-width: 300px) {
+    font-size: 12px;
+  }
+  @media (min-width: 600px) {
+    font-size: 14px;
+  }
+  @media (min-width: 900px) {
+    font-size: 15px;
+  }
+`;
+
+const NewsImg = styled.img`
+  width: 100px;
+  margin-left: 10px;
+  @media (min-width: 300px) {
+    width: 80px;
+  }
+`;
+
+const Modified = styled.div`
+  margin-top: 10px;
+  color: #e8e6e3;
+
+  @media (min-width: 300px) {
+    font-size: 10px;
+  }
+  @media (min-width: 600px) {
+    font-size: 12px;
+  }
+  @media (min-width: 900px) {
+    font-size: 13px;
+  }
 `;
 
 const ListTitleItem = styled.div`
@@ -125,6 +223,7 @@ const CoinPage = () => {
   // const { Title, Paragraph, Text, Link } = Typography;
   const [metaPage, setMetaPage] = useState();
   const [coinVal, setCoinVal] = useState();
+  const [news, setNews] = useState([]);
   const [usdVal, setUSDVal] = useState();
   const [modal, setModal] = useState(false);
   const small = useIsSmallScreen();
@@ -162,6 +261,26 @@ const CoinPage = () => {
         if (isMounted) setMetaPage(arr[0]);
       })
       .catch((err) => {});
+    fetch(
+      `${context.config.NEWS_ENDPOINT}q=${bigID}&lang=en&sortby=publishedAt&country=us&token=${context.config.NEWS_TOKEN}`,
+      {
+        method: 'GET',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.status);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const arr = data.articles;
+        if (isMounted) setNews(arr);
+      })
+      .catch((err) => {});
     return () => {
       isMounted = false;
     };
@@ -171,6 +290,8 @@ const CoinPage = () => {
     bigID,
     context.config.API_KEY,
     context.config.META_ENDPOINT,
+    context.config.NEWS_ENDPOINT,
+    context.config.NEWS_TOKEN,
   ]);
 
   const coins = context.cryptoData;
@@ -238,7 +359,7 @@ const CoinPage = () => {
 
   return (
     <>
-      {metaPage && coinInfo && context.graphData ? (
+      {metaPage && coinInfo && context.graphData && news ? (
         <>
           <Typography>
             {/* <Button type="link" className="link" href="/">
@@ -473,8 +594,7 @@ const CoinPage = () => {
                 </>
               )}
               <Divider style={{ borderColor: '#34383a', marginTop: 15 }} />
-
-              <Line {...config} />
+              {!context.error ? <Line {...config} /> : ''}
             </div>
             {/* <div style={{ boxSizing: 'border-box', marginBottom: 16 }}>
               <img  alt="logo" src={coinInfo.}style={{ height: 32, width: 32, marginRight: 12 }} />
@@ -895,6 +1015,40 @@ const CoinPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div style={{ padding: 24 }}>
+              <TitleItem>{coinInfo.symbol} News</TitleItem>
+              <Divider style={{ borderColor: '#34383a', marginTop: 10 }} />
+
+              {news.map((newsObj) => {
+                return (
+                  <PageContainer>
+                    <a
+                      href={newsObj.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      key={newsObj.url}
+                    >
+                      <NewsContainer className="drink">
+                        <Title>
+                          <SubTitle>{newsObj.source.name}</SubTitle>
+                          {newsObj.title}
+                          <Modified>
+                            {moment(newsObj.publishedAt).format('MMM Do YY')}
+                          </Modified>
+                        </Title>
+                        {newsObj.image ? (
+                          <div>
+                            <NewsImg alt={newsObj.title} src={newsObj.image} />
+                          </div>
+                        ) : (
+                          <div>no image</div>
+                        )}
+                      </NewsContainer>
+                    </a>
+                  </PageContainer>
+                );
+              })}
             </div>
           </Typography>
         </>

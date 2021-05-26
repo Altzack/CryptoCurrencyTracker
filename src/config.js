@@ -10,4 +10,7 @@ export default {
     'https://boiling-bastion-93969.herokuapp.com/https://pro-api.coinmarketcap.com/v1/cryptocurrency/info?',
   GLOBAL_METRIC:
     'https://boiling-bastion-93969.herokuapp.com/https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest?',
+  NEWS_ENDPOINT:
+    'https://boiling-bastion-93969.herokuapp.com/https://gnews.io/api/v4/search?',
+  NEWS_TOKEN: '7fb6ae2c2ee561cec749142b4540ed45',
 };
