@@ -96,7 +96,7 @@ const CryptoList = () => {
               render={(item) => (
                 <>
                   {small ? (
-                    <a href={`/coin/${item.symba}`}>
+                    <a href={`/coin/${item.symba}-${item.name}`}>
                       <div
                         style={{
                           display: 'flex',

@@ -233,7 +233,13 @@ const CoinPage = () => {
   const { getCryptoData } = context;
   const { getGraph } = context;
   // const { getMetaData } = context;
-  const bigID = id.symbol;
+  const bigID = id.symbol.split('-').shift();
+  const nameID = id.symbol.split('-').pop();
+
+  console.log(bigID);
+  console.log(id);
+  console.log(nameID);
+
   // const arg = context.cryptoData.map((item) => item.symbol);
 
   useEffect(() => {
@@ -262,7 +268,7 @@ const CoinPage = () => {
       })
       .catch((err) => {});
     fetch(
-      `${context.config.NEWS_ENDPOINT}q=${bigID}&lang=en&sortby=publishedAt&country=us&token=${context.config.NEWS_TOKEN}`,
+      `${context.config.NEWS_ENDPOINT}q=${nameID}&lang=en&sortby=publishedAt&country=us&token=${context.config.NEWS_TOKEN}`,
       {
         method: 'GET',
         headers: {
@@ -292,12 +298,13 @@ const CoinPage = () => {
     context.config.META_ENDPOINT,
     context.config.NEWS_ENDPOINT,
     context.config.NEWS_TOKEN,
+    nameID,
   ]);
 
   const coins = context.cryptoData;
 
   const coinInfo = coins.find((p) => {
-    const boolThingy = p.symbol === id.symbol;
+    const boolThingy = p.symbol === bigID;
     return boolThingy;
   });
 
@@ -1020,7 +1027,7 @@ const CoinPage = () => {
               <TitleItem>{coinInfo.symbol} News</TitleItem>
               <Divider style={{ borderColor: '#34383a', marginTop: 10 }} />
 
-              {news.map((newsObj) => {
+              {news.slice(0, 5).map((newsObj) => {
                 return (
                   <PageContainer>
                     <a
