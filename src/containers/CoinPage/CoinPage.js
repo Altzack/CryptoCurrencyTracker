@@ -8,7 +8,10 @@ import './CoinPage.css';
 import { Line } from '@ant-design/charts';
 import moment from 'moment';
 import AppContext from '../../AppContext';
-import { useIsSmallScreen } from '../common/responsiveComponents';
+import {
+  useIsSmallScreen,
+  useIsMediumScreen,
+} from '../common/responsiveComponents';
 
 import Loader from '../common/Loader/Loader';
 
@@ -23,22 +26,21 @@ const TitleItem = styled.div`
 const NewsContainer = styled.article`
   align-items: center;
   justify-content: center;
-  padding: 50px;
   display: flex;
   margin: -1px -24px;
   border-bottom: 1px solid #34383a;
-  padding: 8px 10px;
+  padding: 5px;
   :hover {
     background-color: rgb(40, 47, 51);
   }
-  @media (min-width: 300px) {
-    width: 320px;
+  @media (min-width: 320px) {
+    width: 310px;
   }
-  @media (min-width: 600px) {
-    width: 550px;
+  @media (min-width: 700px) {
+    width: 600px;
   }
   @media (min-width: 900px) {
-    width: 800px;
+    width: auto;
   }
 `;
 
@@ -46,7 +48,6 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  width: 100%;
   flex-direction: column;
   margin-top: 15px;
   flex-wrap: wrap;
@@ -57,20 +58,22 @@ const Title = styled.div`
   font-weight: 300;
   text-align: left;
   font-size: 16px;
+  width: 300px;
   text-transform: capitalize;
   color: #e8e6e3;
   margin-bottom: 10px;
   @media (min-width: 300px) {
     font-size: 11px;
-    width: 200px;
+    width: 300px;
+    padding: 10px;
   }
-  @media (min-width: 600px) {
-    font-size: 13px;
-    width: 350px;
-  }
+  // @media (min-width: 600px) {
+  //   font-size: 13px;
+  //   width: 500px;
+  // }
   @media (min-width: 900px) {
     font-size: 14px;
-    width: 600px;
+    width: 589px;
   }
 `;
 
@@ -227,7 +230,7 @@ const CoinPage = () => {
   const [usdVal, setUSDVal] = useState();
   const [modal, setModal] = useState(false);
   const small = useIsSmallScreen();
-
+  const lg = useIsMediumScreen();
   const context = useContext(AppContext);
   const id = useParams();
   const { getCryptoData } = context;
@@ -235,10 +238,6 @@ const CoinPage = () => {
   // const { getMetaData } = context;
   const bigID = id.symbol.split('-').shift();
   const nameID = id.symbol.split('-').pop();
-
-  console.log(bigID);
-  console.log(id);
-  console.log(nameID);
 
   // const arg = context.cryptoData.map((item) => item.symbol);
 
@@ -268,7 +267,7 @@ const CoinPage = () => {
       })
       .catch((err) => {});
     fetch(
-      `${context.config.NEWS_ENDPOINT}q=${nameID}&lang=en&sortby=publishedAt&country=us&token=${context.config.NEWS_TOKEN}`,
+      `${context.config.NEWS_ENDPOINT}q=${nameID} AND ${bigID} OR ${bigID} OR ${nameID}&lang=en&sortby=publishedAt&country=us&token=${context.config.NEWS_TOKEN}`,
       {
         method: 'GET',
         headers: {
@@ -369,9 +368,6 @@ const CoinPage = () => {
       {metaPage && coinInfo && context.graphData && news ? (
         <>
           <Typography>
-            {/* <Button type="link" className="link" href="/">
-              go back
-            </Button> */}
             <div
               style={{
                 display: 'flex',
@@ -383,7 +379,7 @@ const CoinPage = () => {
                 style={{
                   marginTop: 10,
 
-                  width: '100%',
+                  maxWidth: 1400,
                 }}
               >
                 <div
@@ -418,12 +414,12 @@ const CoinPage = () => {
                         {coinInfo.name}
                       </h2>
                     </div>
+
                     <div
                       style={{
                         display: 'flex',
                         alignItems: 'center',
                         flexDirection: 'column',
-                        justifyContent: 'flex-start',
                         marginTop: 12,
                       }}
                     >
@@ -591,471 +587,659 @@ const CoinPage = () => {
                 <Divider style={{ borderColor: '#34383a', marginBottom: 10 }} />
               </HeaderCon>
             </div>
-
-            <div style={{ paddingLeft: 15, paddingRight: 15, paddingTop: 5 }}>
-              {context.error ? (
-                <TitleItem>No Chart Data</TitleItem>
-              ) : (
-                <>
-                  <TitleItem>{coinInfo.name} chart (60d)</TitleItem>
-                </>
-              )}
-              <Divider style={{ borderColor: '#34383a', marginTop: 15 }} />
-              {!context.error ? <Line {...config} /> : ''}
-            </div>
-            {/* <div style={{ boxSizing: 'border-box', marginBottom: 16 }}>
-              <img  alt="logo" src={coinInfo.}style={{ height: 32, width: 32, marginRight: 12 }} />
-              <div>{coinInfo.name}</div>
-              <div />
-            </div> */}
-            <div style={{ padding: 24 }}>
-              <ConverterDiv>
-                <ConverteSingleDiv style={{ background: 'rgb(24, 26, 27)' }}>
-                  <ConverterImg alt="logo" src={metaPage.logo} />
-                  <div style={{ margin: 0, boxSizing: 'border-box' }}>
-                    <p style={{ margin: 0, color: 'rgb(164, 157, 145)' }}>
-                      {coinInfo.symbol}
-                    </p>
-                    <p
-                      style={{
-                        margin: 0,
-                        color: 'rgb(206, 202, 195)',
-                        fontSize: 14,
-                      }}
-                    >
-                      {coinInfo.name}
-                    </p>
-                  </div>
-                  <ConverteInputDiv>
-                    <ConverteInput
-                      id="coinInput"
-                      type="number"
-                      pattern="/^-?d+.?d*$/"
-                      value={coinVal}
-                      maxLength="10"
-                      onInput={maxLengthCheck}
-                      placeholder="0"
-                      onChange={coinInputOnChange}
-                    />
-                  </ConverteInputDiv>
-                </ConverteSingleDiv>
-                <ConverteSingleDiv style={{ background: 'rgb(27, 29, 30)' }}>
-                  <ConverterImg
-                    alt="logo"
-                    src="https://s2.coinmarketcap.com/static/cloud/img/fiat-flags/USD.svg"
-                  />
-                  <div style={{ margin: 0, boxSizing: 'border-box' }}>
-                    <p style={{ margin: 0, color: 'rgb(164, 157, 145)' }}>
-                      USD
-                    </p>
-                    <p
-                      style={{
-                        margin: 0,
-                        color: 'rgb(206, 202, 195)',
-                        fontSize: 14,
-                      }}
-                    >
-                      United States Dollar
-                    </p>
-                  </div>
-                  <ConverteInputDiv>
-                    <ConverteInput
-                      id="usdInput"
-                      pattern="/^-?d+.?d*$/"
-                      value={usdVal}
-                      type="number"
-                      maxLength="10"
-                      onInput={maxLengthCheck}
-                      placeholder="0"
-                      onChange={usdInputOnChange}
-                    />
-                  </ConverteInputDiv>
-                </ConverteSingleDiv>
-              </ConverterDiv>
+            <div
+              style={{
+                display: lg ? 'flex' : '',
+                justifyContent: lg ? 'center' : '',
+              }}
+            >
               <div
-                style={{ padding: 24, borderRadius: 16, background: '#1B1d1e' }}
+                style={{
+                  display: lg ? 'inline-flex' : '',
+                  maxWidth: 1400,
+                }}
               >
-                <TitleItem style={{ marginTop: 25 }}>
-                  {coinInfo.name} Price Statistics
-                </TitleItem>
-                <ListSubTitleItem
-                  style={{
-                    marginTop: 25,
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: '#a1998d',
-                  }}
-                >
-                  {coinInfo.name} Price
-                </ListSubTitleItem>
                 <div
                   style={{
+                    width: '100%',
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                    borderTop: '1px solid #867d6e',
+                    justifyContent: 'center',
                   }}
                 >
-                  <ListTitleItem>{coinInfo.name} Price</ListTitleItem>
-                  <ListSubTitleItem>
-                    ${Number(coinInfo.quote.USD.price).toLocaleString()}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Trading Volume(24h)</ListTitleItem>
-                  <ListSubTitleItem>
-                    {small
-                      ? abbreviate(
-                          coinInfo.quote.USD.volume_24h,
-                          2
-                        ).toUpperCase()
-                      : `$${Number(
-                          coinInfo.quote.USD.volume_24h
-                        ).toLocaleString()}`}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Market Cap</ListTitleItem>
-                  <ListSubTitleItem>
-                    {/* {
-                      small ? abbreviate(Number(coinInfo.quote.USD.market_cap),2) : {Number(coinInfo.quote.USD.market_cap).toLocaleString()}
-
-                    } */}
-                    {small
-                      ? abbreviate(
-                          coinInfo.quote.USD.market_cap,
-                          2
-                        ).toUpperCase()
-                      : `$${Number(
-                          coinInfo.quote.USD.market_cap
-                        ).toLocaleString()}`}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Market Rank</ListTitleItem>
-                  <ListSubTitleItem>
-                    #{Number(coinInfo.cmc_rank)}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Price Change(24h)</ListTitleItem>
-                  <ListSubTitleItem>
-                    {Number(coinInfo.quote.USD.percent_change_24h)
-                      .toLocaleString()
-                      .includes('-') ? (
-                      <span style={{ color: '#eb4650' }}>
-                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_24h)
-                          .toLocaleString()
-                          .split('-')
-                          .pop()
-                          .trim()}%`}
-                      </span>
-                    ) : (
-                      <span style={{ color: '#46ebac' }}>
-                        {`\u25B4${Number(
-                          coinInfo.quote.USD.percent_change_24h
-                        ).toLocaleString()}%`}
-                      </span>
-                    )}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Price Change(7d)</ListTitleItem>
-                  <ListSubTitleItem>
-                    {Number(coinInfo.quote.USD.percent_change_7d)
-                      .toLocaleString()
-                      .includes('-') ? (
-                      <span style={{ color: '#eb4650' }}>
-                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_7d)
-                          .toLocaleString()
-                          .split('-')
-                          .pop()
-                          .trim()}%`}
-                      </span>
-                    ) : (
-                      <span style={{ color: '#46ebac' }}>
-                        {`\u25B4${Number(
-                          coinInfo.quote.USD.percent_change_7d
-                        ).toLocaleString()}%`}
-                      </span>
-                    )}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Price Change(30d)</ListTitleItem>
-                  <ListSubTitleItem>
-                    {Number(coinInfo.quote.USD.percent_change_30d)
-                      .toLocaleString()
-                      .includes('-') ? (
-                      <span style={{ color: '#eb4650' }}>
-                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_30d)
-                          .toLocaleString()
-                          .split('-')
-                          .pop()
-                          .trim()}%`}
-                      </span>
-                    ) : (
-                      <span style={{ color: '#46ebac' }}>
-                        {`\u25B4${Number(
-                          coinInfo.quote.USD.percent_change_30d
-                        ).toLocaleString()}%`}
-                      </span>
-                    )}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Price Change(60d)</ListTitleItem>
-                  <ListSubTitleItem>
-                    {Number(coinInfo.quote.USD.percent_change_60d)
-                      .toLocaleString()
-                      .includes('-') ? (
-                      <span style={{ color: '#eb4650' }}>
-                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_60d)
-                          .toLocaleString()
-                          .split('-')
-                          .pop()
-                          .trim()}%`}
-                      </span>
-                    ) : (
-                      <span style={{ color: '#46ebac' }}>
-                        {`\u25B4${Number(
-                          coinInfo.quote.USD.percent_change_60d
-                        ).toLocaleString()}%`}
-                      </span>
-                    )}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Price Change(90d)</ListTitleItem>
-                  <ListSubTitleItem>
-                    {Number(coinInfo.quote.USD.percent_change_90d)
-                      .toLocaleString()
-                      .includes('-') ? (
-                      <span style={{ color: '#eb4650' }}>
-                        {`\u25BE${Number(coinInfo.quote.USD.percent_change_90d)
-                          .toLocaleString()
-                          .split('-')
-                          .pop()
-                          .trim()}%`}
-                      </span>
-                    ) : (
-                      <span style={{ color: '#46ebac' }}>
-                        {`\u25B4${Number(
-                          coinInfo.quote.USD.percent_change_90d
-                        ).toLocaleString()}%`}
-                      </span>
-                    )}
-                  </ListSubTitleItem>
-                </div>
-                {/* <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Market Cap</ListTitleItem>
-                  <ListSubTitleItem>
-                    ${Number(coinInfo.quote.USD.market_cap).toLocaleString()}
-                  </ListSubTitleItem>
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #867d6e',
-                  }}
-                >
-                  <ListTitleItem>Market Rank</ListTitleItem>
-                  <ListSubTitleItem>
-                    #{Number(coinInfo.cmc_rank)}
-                  </ListSubTitleItem>
-                </div> */}
-                <div style={{ marginTop: 25 }}>
-                  <ListSubTitleItem
-                    style={{ fontSize: 12, fontWeight: 500, color: '#a1998d' }}
-                  >
-                    {coinInfo.name} Supply
-                  </ListSubTitleItem>
                   <div
                     style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      borderBottom: '1px solid #867d6e',
-                      borderTop: '1px solid #867d6e',
+                      paddingLeft: 15,
+                      paddingRight: 15,
+                      paddingTop: 5,
+                      maxWidth: 1000,
+                      width: lg ? 900 : '100%',
                     }}
                   >
-                    <ListTitleItem>Max Supply</ListTitleItem>
-                    <ListSubTitleItem>
-                      {coinInfo.max_supply !== null ? (
-                        small ? (
-                          abbreviate(coinInfo.max_supply, 2).toUpperCase()
-                        ) : (
-                          `${Number(coinInfo.max_supply).toLocaleString()} ${
-                            coinInfo.symbol
-                          }`
-                        )
-                      ) : (
-                        <div>No Data</div>
-                      )}
-                    </ListSubTitleItem>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      borderBottom: '1px solid #867d6e',
-                    }}
-                  >
-                    <ListTitleItem>Circulating Supply</ListTitleItem>
-                    <ListSubTitleItem>
-                      {coinInfo.circulating_supply !== null ? (
-                        small ? (
-                          abbreviate(
-                            coinInfo.circulating_supply,
-                            2
-                          ).toUpperCase()
-                        ) : (
-                          `${Number(
-                            coinInfo.circulating_supply
-                          ).toLocaleString()} ${coinInfo.symbol}`
-                        )
-                      ) : (
-                        <div>No Data</div>
-                      )}
-                    </ListSubTitleItem>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      borderBottom: '1px solid #867d6e',
-                    }}
-                  >
-                    <ListTitleItem>Total Supply</ListTitleItem>
-                    <ListSubTitleItem>
-                      {coinInfo.total_supply !== null ? (
-                        small ? (
-                          abbreviate(coinInfo.total_supply, 2).toUpperCase()
-                        ) : (
-                          `${Number(coinInfo.total_supply).toLocaleString()} ${
-                            coinInfo.symbol
-                          }`
-                        )
-                      ) : (
-                        <div>No Data</div>
-                      )}
-                    </ListSubTitleItem>
-                  </div>
-                </div>
-                <div style={{ marginTop: 25 }}>
-                  <ListSubTitleItem
-                    style={{ fontSize: 12, fontWeight: 500, color: '#a1998d' }}
-                  >
-                    {coinInfo.name} Tags
-                  </ListSubTitleItem>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      borderBottom: '1px solid #867d6e',
-                      borderTop: '1px solid #867d6e',
-                    }}
-                  >
-                    <ListSubTitleItem>
-                      {metaPage['tag-names'].slice(0, 4).map((tag) => {
-                        return (
-                          <Tag style={{ marginTop: 5 }} color="#515969">
-                            {tag}
-                          </Tag>
-                        );
-                      })}
-                    </ListSubTitleItem>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div style={{ padding: 24 }}>
-              <TitleItem>{coinInfo.symbol} News</TitleItem>
-              <Divider style={{ borderColor: '#34383a', marginTop: 10 }} />
-
-              {news.slice(0, 5).map((newsObj) => {
-                return (
-                  <PageContainer>
-                    <a
-                      href={newsObj.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      key={newsObj.url}
+                    {context.error ? (
+                      <TitleItem>No Chart Data</TitleItem>
+                    ) : (
+                      <>
+                        <TitleItem>{coinInfo.name} chart (60d)</TitleItem>
+                      </>
+                    )}
+                    <Divider
+                      style={{ borderColor: '#34383a', marginTop: 15 }}
+                    />
+                    {!context.error ? <Line {...config} /> : ''}
+                    <div
+                      style={{
+                        padding: 24,
+                        color: '#e8e6e3',
+                        borderRadius: 16,
+                        background: '#1B1d1e',
+                        // width: 620,
+                        height: 'fit-content',
+                        marginTop: 20,
+                      }}
                     >
-                      <NewsContainer className="drink">
-                        <Title>
-                          <SubTitle>{newsObj.source.name}</SubTitle>
-                          {newsObj.title}
-                          <Modified>
-                            {moment(newsObj.publishedAt).format('MMM Do YY')}
-                          </Modified>
-                        </Title>
-                        {newsObj.image ? (
-                          <div>
-                            <NewsImg alt={newsObj.title} src={newsObj.image} />
-                          </div>
-                        ) : (
-                          <div>no image</div>
-                        )}
-                      </NewsContainer>
-                    </a>
-                  </PageContainer>
-                );
-              })}
+                      <TitleItem style={{ marginBottom: 5 }}>
+                        What is {coinInfo.name} ({coinInfo.symbol})?
+                      </TitleItem>
+                      {metaPage.description}
+                    </div>
+                    {lg && (
+                      <div
+                        style={{
+                          padding: 24,
+                          borderRadius: 16,
+                          background: '#1B1d1e',
+                          // width: 620,
+                          height: 'fit-content',
+                          marginTop: 20,
+                        }}
+                      >
+                        <div>
+                          <TitleItem style={{}}>
+                            {coinInfo.symbol} News
+                          </TitleItem>
+                          <Divider
+                            style={{
+                              borderColor: '#34383a',
+                              marginTop: 12,
+                            }}
+                          />
+
+                          {news.slice(0, 3).map((newsObj) => {
+                            return (
+                              <a
+                                href={newsObj.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                key={newsObj.url}
+                              >
+                                <NewsContainer>
+                                  <Title>
+                                    <SubTitle>{newsObj.source.name}</SubTitle>
+                                    {newsObj.title}
+                                    <Modified>
+                                      {moment(newsObj.publishedAt).format(
+                                        'MMM Do YY'
+                                      )}
+                                    </Modified>
+                                  </Title>
+                                  {newsObj.image ? (
+                                    <div>
+                                      <NewsImg
+                                        alt={newsObj.title}
+                                        src={newsObj.image}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div>no image</div>
+                                  )}
+                                </NewsContainer>
+                              </a>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div
+                  style={
+                    {
+                      // display: lg ? 'flex' : '',
+                      // justifyContent: lg ? 'space-evenly' : '',
+                    }
+                  }
+                >
+                  <div
+                    style={{
+                      padding: 24,
+                      // width: lg ? '100%' : '',
+                      // display: lg ? 'flex' : '',
+                      // justifyContent: lg ? 'space-evenly' : '',
+                    }}
+                  >
+                    <ConverterDiv style={{ width: lg ? 500 : '' }}>
+                      <ConverteSingleDiv
+                        style={{ background: 'rgb(24, 26, 27)' }}
+                      >
+                        <ConverterImg alt="logo" src={metaPage.logo} />
+                        <div style={{ margin: 0, boxSizing: 'border-box' }}>
+                          <p style={{ margin: 0, color: 'rgb(164, 157, 145)' }}>
+                            {coinInfo.symbol}
+                          </p>
+                          <p
+                            style={{
+                              margin: 0,
+                              color: 'rgb(206, 202, 195)',
+                              fontSize: 14,
+                            }}
+                          >
+                            {coinInfo.name}
+                          </p>
+                        </div>
+                        <ConverteInputDiv>
+                          <ConverteInput
+                            id="coinInput"
+                            type="number"
+                            pattern="/^-?d+.?d*$/"
+                            value={coinVal}
+                            maxLength="10"
+                            onInput={maxLengthCheck}
+                            placeholder="0"
+                            onChange={coinInputOnChange}
+                          />
+                        </ConverteInputDiv>
+                      </ConverteSingleDiv>
+                      <ConverteSingleDiv
+                        style={{ background: 'rgb(27, 29, 30)' }}
+                      >
+                        <ConverterImg
+                          alt="logo"
+                          src="https://s2.coinmarketcap.com/static/cloud/img/fiat-flags/USD.svg"
+                        />
+                        <div style={{ margin: 0, boxSizing: 'border-box' }}>
+                          <p style={{ margin: 0, color: 'rgb(164, 157, 145)' }}>
+                            USD
+                          </p>
+                          <p
+                            style={{
+                              margin: 0,
+                              color: 'rgb(206, 202, 195)',
+                              fontSize: 14,
+                            }}
+                          >
+                            United States Dollar
+                          </p>
+                        </div>
+                        <ConverteInputDiv>
+                          <ConverteInput
+                            id="usdInput"
+                            pattern="/^-?d+.?d*$/"
+                            value={usdVal}
+                            type="number"
+                            maxLength="10"
+                            onInput={maxLengthCheck}
+                            placeholder="0"
+                            onChange={usdInputOnChange}
+                          />
+                        </ConverteInputDiv>
+                      </ConverteSingleDiv>
+                    </ConverterDiv>
+
+                    <div
+                      style={{
+                        padding: 24,
+                        borderRadius: 16,
+                        background: '#1B1d1e',
+                        width: lg ? 500 : '',
+                      }}
+                    >
+                      <TitleItem style={{ marginTop: 25 }}>
+                        {coinInfo.name} Price Statistics
+                      </TitleItem>
+                      <ListSubTitleItem
+                        style={{
+                          marginTop: 25,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          color: '#a1998d',
+                        }}
+                      >
+                        {coinInfo.name} Price
+                      </ListSubTitleItem>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                          borderTop: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>{coinInfo.name} Price</ListTitleItem>
+                        <ListSubTitleItem>
+                          ${Number(coinInfo.quote.USD.price).toLocaleString()}
+                        </ListSubTitleItem>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>Trading Volume(24h)</ListTitleItem>
+                        <ListSubTitleItem>
+                          {small
+                            ? abbreviate(
+                                coinInfo.quote.USD.volume_24h,
+                                2
+                              ).toUpperCase()
+                            : `$${Number(
+                                coinInfo.quote.USD.volume_24h
+                              ).toLocaleString()}`}
+                        </ListSubTitleItem>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>Market Cap</ListTitleItem>
+                        <ListSubTitleItem>
+                          {small
+                            ? abbreviate(
+                                coinInfo.quote.USD.market_cap,
+                                2
+                              ).toUpperCase()
+                            : `$${Number(
+                                coinInfo.quote.USD.market_cap
+                              ).toLocaleString()}`}
+                        </ListSubTitleItem>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>Market Rank</ListTitleItem>
+                        <ListSubTitleItem>
+                          #{Number(coinInfo.cmc_rank)}
+                        </ListSubTitleItem>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>Price Change(24h)</ListTitleItem>
+                        <ListSubTitleItem>
+                          {Number(coinInfo.quote.USD.percent_change_24h)
+                            .toLocaleString()
+                            .includes('-') ? (
+                            <span style={{ color: '#eb4650' }}>
+                              {`\u25BE${Number(
+                                coinInfo.quote.USD.percent_change_24h
+                              )
+                                .toLocaleString()
+                                .split('-')
+                                .pop()
+                                .trim()}%`}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#46ebac' }}>
+                              {`\u25B4${Number(
+                                coinInfo.quote.USD.percent_change_24h
+                              ).toLocaleString()}%`}
+                            </span>
+                          )}
+                        </ListSubTitleItem>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>Price Change(7d)</ListTitleItem>
+                        <ListSubTitleItem>
+                          {Number(coinInfo.quote.USD.percent_change_7d)
+                            .toLocaleString()
+                            .includes('-') ? (
+                            <span style={{ color: '#eb4650' }}>
+                              {`\u25BE${Number(
+                                coinInfo.quote.USD.percent_change_7d
+                              )
+                                .toLocaleString()
+                                .split('-')
+                                .pop()
+                                .trim()}%`}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#46ebac' }}>
+                              {`\u25B4${Number(
+                                coinInfo.quote.USD.percent_change_7d
+                              ).toLocaleString()}%`}
+                            </span>
+                          )}
+                        </ListSubTitleItem>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>Price Change(30d)</ListTitleItem>
+                        <ListSubTitleItem>
+                          {Number(coinInfo.quote.USD.percent_change_30d)
+                            .toLocaleString()
+                            .includes('-') ? (
+                            <span style={{ color: '#eb4650' }}>
+                              {`\u25BE${Number(
+                                coinInfo.quote.USD.percent_change_30d
+                              )
+                                .toLocaleString()
+                                .split('-')
+                                .pop()
+                                .trim()}%`}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#46ebac' }}>
+                              {`\u25B4${Number(
+                                coinInfo.quote.USD.percent_change_30d
+                              ).toLocaleString()}%`}
+                            </span>
+                          )}
+                        </ListSubTitleItem>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>Price Change(60d)</ListTitleItem>
+                        <ListSubTitleItem>
+                          {Number(coinInfo.quote.USD.percent_change_60d)
+                            .toLocaleString()
+                            .includes('-') ? (
+                            <span style={{ color: '#eb4650' }}>
+                              {`\u25BE${Number(
+                                coinInfo.quote.USD.percent_change_60d
+                              )
+                                .toLocaleString()
+                                .split('-')
+                                .pop()
+                                .trim()}%`}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#46ebac' }}>
+                              {`\u25B4${Number(
+                                coinInfo.quote.USD.percent_change_60d
+                              ).toLocaleString()}%`}
+                            </span>
+                          )}
+                        </ListSubTitleItem>
+                      </div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid #867d6e',
+                        }}
+                      >
+                        <ListTitleItem>Price Change(90d)</ListTitleItem>
+                        <ListSubTitleItem>
+                          {Number(coinInfo.quote.USD.percent_change_90d)
+                            .toLocaleString()
+                            .includes('-') ? (
+                            <span style={{ color: '#eb4650' }}>
+                              {`\u25BE${Number(
+                                coinInfo.quote.USD.percent_change_90d
+                              )
+                                .toLocaleString()
+                                .split('-')
+                                .pop()
+                                .trim()}%`}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#46ebac' }}>
+                              {`\u25B4${Number(
+                                coinInfo.quote.USD.percent_change_90d
+                              ).toLocaleString()}%`}
+                            </span>
+                          )}
+                        </ListSubTitleItem>
+                      </div>
+                      <div style={{ marginTop: 25 }}>
+                        <ListSubTitleItem
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 500,
+                            color: '#a1998d',
+                          }}
+                        >
+                          {coinInfo.name} Supply
+                        </ListSubTitleItem>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            borderBottom: '1px solid #867d6e',
+                            borderTop: '1px solid #867d6e',
+                          }}
+                        >
+                          <ListTitleItem>Max Supply</ListTitleItem>
+                          <ListSubTitleItem>
+                            {coinInfo.max_supply !== null ? (
+                              small ? (
+                                abbreviate(coinInfo.max_supply, 2).toUpperCase()
+                              ) : (
+                                `${Number(
+                                  coinInfo.max_supply
+                                ).toLocaleString()} ${coinInfo.symbol}`
+                              )
+                            ) : (
+                              <div>No Data</div>
+                            )}
+                          </ListSubTitleItem>
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            borderBottom: '1px solid #867d6e',
+                          }}
+                        >
+                          <ListTitleItem>Circulating Supply</ListTitleItem>
+                          <ListSubTitleItem>
+                            {coinInfo.circulating_supply !== null ? (
+                              small ? (
+                                abbreviate(
+                                  coinInfo.circulating_supply,
+                                  2
+                                ).toUpperCase()
+                              ) : (
+                                `${Number(
+                                  coinInfo.circulating_supply
+                                ).toLocaleString()} ${coinInfo.symbol}`
+                              )
+                            ) : (
+                              <div>No Data</div>
+                            )}
+                          </ListSubTitleItem>
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            borderBottom: '1px solid #867d6e',
+                          }}
+                        >
+                          <ListTitleItem>Total Supply</ListTitleItem>
+                          <ListSubTitleItem>
+                            {coinInfo.total_supply !== null ? (
+                              small ? (
+                                abbreviate(
+                                  coinInfo.total_supply,
+                                  2
+                                ).toUpperCase()
+                              ) : (
+                                `${Number(
+                                  coinInfo.total_supply
+                                ).toLocaleString()} ${coinInfo.symbol}`
+                              )
+                            ) : (
+                              <div>No Data</div>
+                            )}
+                          </ListSubTitleItem>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: 25 }}>
+                        <ListSubTitleItem
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 500,
+                            color: '#a1998d',
+                          }}
+                        >
+                          {coinInfo.name} Tags
+                        </ListSubTitleItem>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            borderBottom: '1px solid #867d6e',
+                            borderTop: '1px solid #867d6e',
+                          }}
+                        >
+                          <ListSubTitleItem>
+                            {metaPage['tag-names'].slice(0, 4).map((tag) => {
+                              return (
+                                <Tag style={{ marginTop: 5 }} color="#515969">
+                                  {tag}
+                                </Tag>
+                              );
+                            })}
+                          </ListSubTitleItem>
+                        </div>
+                      </div>
+                    </div>
+
+                    {!lg && (
+                      <div
+                        style={{
+                          borderRadius: 16,
+                          marginTop: 12,
+                          background: '#1B1d1e',
+                          // width: 620,
+                          padding: 24,
+                          height: 'fit-content',
+                        }}
+                      >
+                        <TitleItem>{coinInfo.symbol} News</TitleItem>
+                        <Divider
+                          style={{ borderColor: '#34383a', marginTop: 10 }}
+                        />
+
+                        {news.slice(0, 3).map((newsObj) => {
+                          return (
+                            <PageContainer>
+                              <a
+                                href={newsObj.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                key={newsObj.url}
+                              >
+                                <NewsContainer style={{}}>
+                                  <Title>
+                                    <SubTitle>{newsObj.source.name}</SubTitle>
+                                    {newsObj.title}
+                                    <Modified>
+                                      {moment(newsObj.publishedAt).format(
+                                        'MMM Do YY'
+                                      )}
+                                    </Modified>
+                                  </Title>
+                                  {newsObj.image ? (
+                                    <div>
+                                      <NewsImg
+                                        alt={newsObj.title}
+                                        src={newsObj.image}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div>no image</div>
+                                  )}
+                                </NewsContainer>
+                              </a>
+                            </PageContainer>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {/* 
+                {!lg && (
+                  <div
+                    style={{
+                      borderRadius: 16,
+                      background: '#1B1d1e',
+                      // width: 620,
+                      height: 'fit-content',
+                    }}
+                  >
+                    <TitleItem>{coinInfo.symbol} News</TitleItem>
+                    <Divider
+                      style={{ borderColor: '#34383a', marginTop: 10 }}
+                    />
+
+                    {news.slice(0, 3).map((newsObj) => {
+                      return (
+                        <PageContainer>
+                          <a
+                            href={newsObj.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            key={newsObj.url}
+                          >
+                            <NewsContainer style={{}}>
+                              <Title>
+                                <SubTitle>{newsObj.source.name}</SubTitle>
+                                {newsObj.title}
+                                <Modified>
+                                  {moment(newsObj.publishedAt).format(
+                                    'MMM Do YY'
+                                  )}
+                                </Modified>
+                              </Title>
+                              {newsObj.image ? (
+                                <div>
+                                  <NewsImg
+                                    alt={newsObj.title}
+                                    src={newsObj.image}
+                                  />
+                                </div>
+                              ) : (
+                                <div>no image</div>
+                              )}
+                            </NewsContainer>
+                          </a>
+                        </PageContainer>
+                      );
+                    })}
+                  </div>
+                )} */}
+              </div>
             </div>
           </Typography>
         </>

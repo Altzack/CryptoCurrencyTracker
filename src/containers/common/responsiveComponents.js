@@ -45,6 +45,11 @@ export const useIsSmallScreen = () => {
   return isXS || isXXS;
 };
 
+export const useIsMediumScreen = () => {
+  const { isLG, isXL } = useScreenClass();
+  return isLG || isXL;
+};
+
 const sceenClassToBreakpoint = {
   xxs: 576,
   xs: 768,
