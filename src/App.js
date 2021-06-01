@@ -60,19 +60,20 @@ class App extends Component {
       graphData: [],
       metaData: [],
       globalMetric: [],
+      searchNames: [],
       error: false,
     };
   }
 
   setCryptoData = (data) => {
-    // const newObj = data.data.map((e) => ({
-    //   checked: false,
-    //   graphData: [e.quote.USD],
-    //   ...e,
-    // }));
-
+    const names = data.data.map((e) => ({
+      name: e.name,
+      symbol: e.symbol,
+    }));
+    console.log(names);
     this.setState({
       cryptoData: data.data,
+      searchNames: names,
     });
   };
 
@@ -219,6 +220,7 @@ class App extends Component {
       getMetaData: this.getMetaData,
       error: this.state.error,
       globalMetric: this.state.globalMetric,
+      searchNames: this.state.searchNames,
     };
     return (
       <AppContext.Provider value={contextValues}>
