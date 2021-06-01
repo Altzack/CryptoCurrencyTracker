@@ -75,7 +75,10 @@ export default function Header() {
 
   const handleSearch = (e) => {
     const finder = context.searchNames.filter((name) => {
-      return name.name.toLowerCase().includes(e.toLowerCase());
+      return (
+        name.name.toLowerCase().includes(e.toLowerCase()) ||
+        name.symbol.toLowerCase().includes(e.toLowerCase())
+      );
     });
 
     setOptions(
