@@ -144,6 +144,21 @@ const NamePill = styled.div`
   white-space: nowrap;
 `;
 
+const GraphTimePill = styled.div`
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  margin-right: 8px;
+  white-space: nowrap;
+  background: #515969;
+  color: rgb(232, 230, 227);
+  :hover {
+    cursor: pointer;
+  }
+`;
+
 const NamePillSpan = styled.span`
   border-radius: 4px;
   padding: 2px 6px;
@@ -226,6 +241,7 @@ const CoinPage = () => {
   // const { Title, Paragraph, Text, Link } = Typography;
   const [metaPage, setMetaPage] = useState();
   const [coinVal, setCoinVal] = useState();
+  const [graphTime, setGraphTime] = useState(365);
   const [news, setNews] = useState([]);
   const [usdVal, setUSDVal] = useState();
   const [modal, setModal] = useState(false);
@@ -336,7 +352,7 @@ const CoinPage = () => {
     }
   };
 
-  const data = context.graphData || [];
+  const data = context.graphData.slice(-graphTime) || [];
   const config = {
     data,
     padding: 'auto',
@@ -615,13 +631,77 @@ const CoinPage = () => {
                       width: lg ? 900 : '100%',
                     }}
                   >
-                    {context.error ? (
-                      <TitleItem>No Chart Data</TitleItem>
-                    ) : (
-                      <>
-                        <TitleItem>{coinInfo.name} chart (60d)</TitleItem>
-                      </>
-                    )}
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                      }}
+                    >
+                      {context.error ? (
+                        <TitleItem>No Chart Data</TitleItem>
+                      ) : (
+                        <>
+                          <TitleItem style={{ fontSize: small ? 17 : '' }}>
+                            {coinInfo.name} chart
+                          </TitleItem>
+                        </>
+                      )}
+                      <div
+                        style={{
+                          display: 'inline-flex',
+                          marginLeft: 20,
+                        }}
+                      >
+                        <GraphTimePill
+                          style={{
+                            background: graphTime === 7 ? 'rgb(50,50,250)' : '',
+                          }}
+                          onClick={() => setGraphTime(7)}
+                        >
+                          1W
+                        </GraphTimePill>
+                        <GraphTimePill
+                          style={{
+                            background:
+                              graphTime === 30 ? 'rgb(50,50,250)' : '',
+                          }}
+                          onClick={() => setGraphTime(30)}
+                        >
+                          1M
+                        </GraphTimePill>
+                        <GraphTimePill
+                          style={{
+                            background:
+                              graphTime === 90 ? 'rgb(50,50,250)' : '',
+                          }}
+                          onClick={() => setGraphTime(90)}
+                        >
+                          3M
+                        </GraphTimePill>
+                        <GraphTimePill
+                          style={{
+                            background:
+                              graphTime === 365 ? 'rgb(50,50,250)' : '',
+                          }}
+                          onClick={() => setGraphTime(365)}
+                        >
+                          1Y
+                        </GraphTimePill>
+                        {/* <GraphTimePill
+                          style={{
+                            background:
+                              graphTime === context.graphData.length
+                                ? 'rgb(50,50,250)'
+                                : '',
+                          }}
+                          onClick={() => setGraphTime(context.graphData.length)}
+                        >
+                          ALL
+                        </GraphTimePill> */}
+                      </div>
+                    </div>
                     <Divider
                       style={{ borderColor: '#34383a', marginTop: 15 }}
                     />
