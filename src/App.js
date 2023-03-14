@@ -70,7 +70,6 @@ class App extends Component {
       name: e.name,
       symbol: e.symbol,
     }));
-    console.log(names);
     this.setState({
       cryptoData: data.data,
       searchNames: names,
@@ -130,7 +129,6 @@ class App extends Component {
     const timeSeries = data['Time Series (Digital Currency Daily)'];
     const dateKeys = Object.keys(data['Time Series (Digital Currency Daily)']);
     const graphArray = [];
-    console.log(dateKeys.length);
     let graphObj = {};
     for (let i = 0; i < dateKeys.length; i++) {
       graphObj = {
