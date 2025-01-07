@@ -77,23 +77,12 @@ class App extends Component {
   };
 
   setGlobalMetric = (data) => {
-    // const newObj = data.data.map((e) => ({
-    //   checked: false,
-    //   graphData: [e.quote.USD],
-    //   ...e,
-    // }));
-
     this.setState({
       globalMetric: data.data,
     });
   };
 
   setMetaData = (data) => {
-    // const newObj = data.data.map((e) => ({
-    //   checked: false,
-    //   graphData: [e.quote.USD],
-    //   ...e,
-    // }));
     const arr = Object.values(data.data);
     this.setState({
       metaData: arr,
@@ -102,15 +91,7 @@ class App extends Component {
   };
 
   getCryptoData = () => {
-    fetch(
-      `${config.API_ENDPOINT}listings/latest?CMC_PRO_API_KEY=${config.API_KEY}`,
-      {
-        method: 'GET',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-      }
-    )
+    fetch(`${config.API_ENDPOINT}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(res.status);
@@ -119,7 +100,6 @@ class App extends Component {
       })
       .then(this.setCryptoData)
       .then(this.getMetaData)
-
       .catch((err) => {
         message.error(`Please try again later: ${err}`);
       });
@@ -149,36 +129,23 @@ class App extends Component {
   };
 
   getGraph = (item) => {
-    fetch(
-      `${config.GRAPH_ENDPOINT}symbol=${item}&market=USD&apikey=${config.GRAPH_KEY}`,
-      {
-        method: 'GET',
-        headers: {},
-      }
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.status);
-        }
-        return res.json();
-      })
-      .then(this.setGraphData)
-      .catch((err) => {
-        this.setState({ error: true });
-      });
+    // fetch(`${config.GRAPH_ENDPOINT}?symbol=${item}&market=USD`)
+    //   .then((res) => {
+    //     if (!res.ok) {
+    //       throw new Error(res.status);
+    //     }
+    //     return res.json();
+    //   })
+    //   .then(this.setGraphData)
+    //   .catch((err) => {
+    //     this.setState({ error: true });
+    //   });
+    console.log('first')
   };
 
   getMetaData = (list) => {
-    const symbolList = this.state.cryptoData.map((item) => item.symbol) || list;
-    fetch(
-      `${config.META_ENDPOINT}symbol=${symbolList}&CMC_PRO_API_KEY=${config.API_KEY}`,
-      {
-        method: 'GET',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-      }
-    )
+    const symbolList = this.state.cryptoData.map((item) => item.symbol).join(',') || list;
+    fetch(`${config.META_ENDPOINT}?symbols=${symbolList}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(res.status);
@@ -186,16 +153,13 @@ class App extends Component {
         return res.json();
       })
       .then(this.setMetaData)
-      .catch((err) => {});
+      .catch((err) => {
+        message.error(`Failed to fetch metadata: ${err}`);
+      });
   };
 
   getGlobalMetrics = () => {
-    fetch(`${config.GLOBAL_METRIC}&CMC_PRO_API_KEY=${config.API_KEY}`, {
-      method: 'GET',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
-    })
+    fetch(`${config.GLOBAL_METRIC}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(res.status);
@@ -203,7 +167,9 @@ class App extends Component {
         return res.json();
       })
       .then(this.setGlobalMetric)
-      .catch((err) => {});
+      .catch((err) => {
+        message.error(`Failed to fetch global metrics: ${err}`);
+      });
   };
 
   render() {

@@ -261,47 +261,52 @@ const CoinPage = () => {
     let isMounted = true;
     getCryptoData();
     getGraph(bigID);
-    fetch(
-      `${context.config.META_ENDPOINT}symbol=${bigID}&CMC_PRO_API_KEY=${context.config.API_KEY}`,
-      {
-        method: 'GET',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
+    fetch(`https://crypto-backend-22-e21566ade45e.herokuapp.com/api/coin-meta?symbol=${bigID}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(res.status);
       }
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.status);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        const arr = Object.values(data.data);
+      return res.json();
+    })
+    .then((data) => {
+      console.log('Backend response:', data); // Log the full response for debugging
+  
+      if (!data || !data.data) {
+        console.error('No data received or invalid response format');
+        return;
+      }
+  
+      const arr = Object.values(data.data);
+  
+      if (isMounted) setMetaPage(arr[0]);
+    })
+    .catch((err) => {
+      console.error('Failed to fetch coin metadata:', err);
+    });
+  
+  
+  
 
-        if (isMounted) setMetaPage(arr[0]);
-      })
-      .catch((err) => {});
-    fetch(
-      `${context.config.NEWS_ENDPOINT}q=${nameID} AND ${bigID} OR ${bigID} OR ${nameID}&lang=en&sortby=publishedAt&country=us&token=${context.config.NEWS_TOKEN}`,
-      {
-        method: 'GET',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-      }
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.status);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        const arr = data.articles;
-        if (isMounted) setNews(arr);
-      })
-      .catch((err) => {});
+    // fetch(
+    //   `${context.config.NEWS_ENDPOINT}q=${nameID} AND ${bigID} OR ${bigID} OR ${nameID}&lang=en&sortby=publishedAt&country=us&token=${context.config.NEWS_TOKEN}`,
+    //   {
+    //     method: 'GET',
+    //     headers: {
+    //       'Access-Control-Allow-Origin': '*',
+    //     },
+    //   }
+    // )
+    //   .then((res) => {
+    //     if (!res.ok) {
+    //       throw new Error(res.status);
+    //     }
+    //     return res.json();
+    //   })
+    //   .then((data) => {
+    //     const arr = data.articles;
+    //     if (isMounted) setNews(arr);
+    //   })
+    //   .catch((err) => {});
     return () => {
       isMounted = false;
     };
