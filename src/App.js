@@ -107,21 +107,23 @@ class App extends Component {
 
   setGraphData = (data) => {
     const timeSeries = data['Time Series (Digital Currency Daily)'];
-    const dateKeys = Object.keys(data['Time Series (Digital Currency Daily)']);
+    const dateKeys = Object.keys(timeSeries); // Get the date keys
     const graphArray = [];
-    let graphObj = {};
+  
     for (let i = 0; i < dateKeys.length; i++) {
-      graphObj = {
-        price: parseFloat(timeSeries[dateKeys[i]]['4b. close (USD)']),
-        date: moment(dateKeys[i]).format('MM/DD'),
+      const graphObj = {
+        price: parseFloat(timeSeries[dateKeys[i]]['4. close']), // Use correct key for closing price
+        date: moment(dateKeys[i]).format('MM/DD'), // Format date as MM/DD
       };
       graphArray.push(graphObj);
     }
+  
     this.setState({
-      graphData: graphArray.reverse(),
+      graphData: graphArray.reverse(), // Reverse to show earliest date first
       loading: false,
     });
   };
+  
 
   componentDidMount = () => {
     this.getCryptoData();
@@ -129,20 +131,24 @@ class App extends Component {
   };
 
   getGraph = (item) => {
-    // fetch(`${config.GRAPH_ENDPOINT}?symbol=${item}&market=USD`)
-    //   .then((res) => {
-    //     if (!res.ok) {
-    //       throw new Error(res.status);
-    //     }
-    //     return res.json();
-    //   })
-    //   .then(this.setGraphData)
-    //   .catch((err) => {
-    //     this.setState({ error: true });
-    //   });
-    console.log('first')
+    fetch(
+      `${config.GRAPH_ENDPOINT}symbol=${item}&market=USD&apikey=${config.GRAPH_KEY}`,
+      {
+        method: 'GET',
+        headers: {},
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.status);
+        }
+        return res.json();
+      })
+      .then(this.setGraphData)
+      .catch((err) => {
+        this.setState({ error: true });
+      });
   };
-
   getMetaData = (list) => {
     const symbolList = this.state.cryptoData.map((item) => item.symbol).join(',') || list;
     fetch(`${config.META_ENDPOINT}?symbols=${symbolList}`)
